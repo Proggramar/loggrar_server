@@ -16,7 +16,7 @@ yarn global add  @nestjs/cli
 ```
 2. Clonar el repositorio.
 ```
-git clone xxx
+git clone https://github.com/Proggramar/loggrar_server.git
 ```
 
 3. instalar dependencias
