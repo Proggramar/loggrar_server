@@ -1,0 +1,8 @@
+[
+    {"name":"Super admin","rol_type":"Super Admin","level":0},
+    {"name":"Administrador","rol_type":"Administrador","level":1},
+    {"name":"Contadores","rol_type":"Contador","level":2},
+    {"name":"Sistemas","rol_type":"Sistemas","level":2},
+    {"name":"Operadores","rol_type":"Operador","level":3},
+    {"name":"Inicial","rol_type":"Básico","level":4}
+]

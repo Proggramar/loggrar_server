@@ -1,0 +1,19 @@
+{
+  "code": "00000000000000000001",
+  "name":"ERP - Loggrar 1.0.0",
+  "address": "no aplica",
+  "phones": "3013995907",
+  "locality": "Medellín - Colombia",
+  "slogan": "Proggramas para el éxito",
+  "email": "walter.echavarria@gmail.com",
+  "logo": "",
+  "license": "Empresa",
+  "suscription": "Anual",
+  "suscription_date":"2100-12-31",
+  "params_account":"{\"structure\":{\"accounts_len\":\"1122222\"},\"balance\":{\"assets\":\"1\",\"liabilities\":\"2\",\"capital\":\"3\"},\"utility\":{\"sales\":\"4\",\"expenses\":\"5,6,7\",\"losses_of_year\":\"59050501\",\"utility\":\"360505\",\"losses\":\"361005\"}}",
+  "number_of_branches": 5,
+  "branchs_name": "Sucursal",
+  "database_information": "{\"database\":\"loggrarDevDB\",\"host\":\"localhost\",\"port\":3306}",
+  "applications":"",
+  "is_active": true
+}

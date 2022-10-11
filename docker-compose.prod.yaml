@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  # loggrarapp:
+  #   depends_on:
+  #     - db
+  #   build: 
+  #     context: .
+  #     dockerfile: DockerFile
+  #   image: loggrar-app
+  #   container_name: loggrar-app
+  #   restart: always # reiniciar el contenedor si se detiene
+  #   ports:
+  #     - "${BACK_APP_PORT}:${BACK_APP_PORT}"
+  #   # working_dir: /var/www/loggrar
+  #   environment:
+  #     NODE_ENV: ${NODE_ENV}
+  #     BACK_DATABASE_HOST: ${BACK_DATABASE_HOST}
+  #     BACK_DATABASE_PORT: ${BACK_DATABASE_PORT}
+  #     BACK_DATABASE_NAME: ${BACK_DATABASE_NAME}
+  #     BACK_DATABASE_USER: ${BACK_DATABASE_USER}
+  #     BACK_DATABASE_PASSWORD: ${BACK_DATABASE_PASSWORD}
+  #     BACK_APP_PORT: ${BACK_APP_PORT}
+  #     BACK_DATABASE_AUTOLOAD_ENTITIES: ${BACK_DATABASE_AUTOLOAD_ENTITIES}
+  #     BACK_DATABASE_LOGGING: ${BACK_DATABASE_LOGGING}
+  #   # volumes:
+  #   #   - ./:/var/www/loggrar
+  db:
+    container_name: ${BACK_DATABASE_HOST_CONTAINER}
+    image: mariadb:10.6
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${BACK_DATABASE_PASSWORD}
+      MYSQL_DATABASE: ${BACK_DATABASE_NAME}
+    ports:
+      - ${BACK_DATABASE_PORT}:${BACK_DATABASE_PORT}
+  #db:
+  #  image: mongo:6
+  #  container_name: ${BACK_DATABASE_HOST_CONTAINER}
+  #  restart: always
+  #  command: [--auth]
+  #  ports:
+  #    - ${BACK_DATABASE_PORT}:${BACK_DATABASE_PORT}
+  #  environment:
+  #    - MONGO_INITDB_ROOT_USERNAME=${BACK_DATABASE_USER_ADMIN}
+  #    - MONGO_INITDB_ROOT_PASSWORD=${BACK_DATABASE_PASSWORD}
+  #    - MONGO_INITDB_DATABASE=${BACK_DATABASE_NAME}
+  #  volumes:
+  #    - ./MongoData:/data/db
