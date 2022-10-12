@@ -117,6 +117,7 @@ export class MySecurity {
 
   async decodeData(data: string, base: string): Promise<string> {
     const toDecode: string[] = (await this.decode(data)).split(':');
+
     const wizardBase: string = await this.decode(base);
     const wizardMax: number = wizardBase.length;
     const decodeMax: number = toDecode.length;

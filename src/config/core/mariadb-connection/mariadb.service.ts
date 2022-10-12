@@ -19,6 +19,7 @@ export class MariaConfigService {
     const bearerFroHheaders = this.mySecurity.getTokenFromBearer(headers.authorization);
     const { data } = this.jwtService.decode(bearerFroHheaders) as any;
     const tenantDefault: JwtTenant = {
+      id: '',
       database: process.env.BACK_DATABASE_NAME,
       host: process.env.BACK_DATABASE_HOST,
       port: +process.env.BACK_DATABASE_PORT,

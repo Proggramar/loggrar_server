@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 
 import { Controller, Get, Post, Body, Version, HttpCode, HttpStatus, Req } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiExcludeEndpoint, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { MySecurity } from '@common/helpers/security';
@@ -9,9 +8,7 @@ import { toBackResponse } from '@common/helpers/responses';
 import { AuthService } from './auth.service';
 import { Auth, GetUser } from '@common/decorators';
 import { ValidRoles } from '@safety/roles/enums';
-import { MyTools } from '@common/helpers/varius';
-
-import { UserCredentials } from './dto';
+import { UserCredential } from '@safety/users/interfaces';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -24,31 +21,19 @@ export class AuthController {
   @Get('generate-passport')
   async generateAppToken(): Promise<any> {
     const jwtLogin = await this.authService.makePassportToken();
-
     return toBackResponse('App-passport returned', { token: jwtLogin });
   }
 
   @ApiResponse({ status: HttpStatus.OK, description: 'Process OK.' })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'No authenticate to run this process.',
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Unauthorized.',
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Internal server error.',
-  })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'No authenticate to run this process.' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' })
+  @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
   @Auth({ roles: [ValidRoles.super] })
   @Get('generate-acces-token')
   async generateToken(@Req() request: Request): Promise<any> {
-    const mySecurty = new MySecurity();
     const objectToLogin = await this.authService.makeTokenToLogin(request);
-
     return toBackResponse('access-token returned', { data: objectToLogin });
   }
 
@@ -60,10 +45,9 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  // @Auth()
   @Auth({ roles: [] })
   @Post('login')
-  async login(@Body() userCredentials: UserCredentials, @Req() request: Request, @GetUser() userReq: any): Promise<any> {
+  async login(@Body() userCredentials: UserCredential, @Req() request: Request, @GetUser() userReq: any): Promise<any> {
     const user = await this.authService.login(userCredentials, request, userReq);
     return toBackResponse('access-token returned', { user });
   }

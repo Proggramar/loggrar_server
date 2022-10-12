@@ -16,7 +16,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 
-import { Auth, RolProtected } from '@common/decorators';
+import { Auth, GetUser, RolProtected } from '@common/decorators';
 import { toBackResponse, TypeResponse } from '@common/helpers/responses';
 
 import { ValidRoles } from '@safety/roles/enums';
@@ -79,9 +79,9 @@ export class UserController {
   @HttpCode(HttpStatus.CREATED)
   @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Post()
-  async create(@Body() body: UserCreateDto): Promise<TypeResponse> {
-    const data = await this.controllerService.createUser(body, true);
-    return toBackResponse('Registro creado correctamente', data);
+  async create(@Body() body: UserCreateDto, @GetUser('data') loginData: any): Promise<TypeResponse> {
+    const createdRecord = await this.controllerService.createUserFromFront({ ...body, tenant: loginData.tenant.id });
+    return toBackResponse('Registro creado correctamente', createdRecord);
   }
 
   @ApiOperation({ summary: 'Get a user', description: 'Get a user by your id' })
@@ -111,8 +111,12 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Patch(':id')
-  async update(@Param('id', ParseUUIDPipe) id: string, @Body() body: UserUpdateDto): Promise<TypeResponse> {
-    const record: any = await this.controllerService.updateUser(id, body);
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: UserUpdateDto,
+    @GetUser('data') loginData: any,
+  ): Promise<TypeResponse> {
+    const record: any = await this.controllerService.updateUser(id, { ...body, tenant: loginData.tenant.id });
     if (record.sqlState && typeof record.sqlState === 'string') {
       if (record.code == 'ER_DUP_ENTRY') {
         return toBackResponse(record.sqlMessage, body, HttpStatus.CONFLICT);

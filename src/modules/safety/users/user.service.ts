@@ -11,10 +11,10 @@ import { MyCrypt } from '@common/helpers/security';
 import { MyTools } from '@common/helpers/varius';
 import { UserCreateDto, UserUpdateDto } from './dto';
 import { MySecurity } from '@common/helpers/security';
+import { UserCredential, UserDataLogin } from './interfaces';
 
 @Injectable()
 export class UserService extends DbAbstract {
-  // private readonly jwtService: JwtService;
   private readonly mySecurity = new MySecurity();
   private readonly myTools = new MyTools();
   private readonly myCrypt = new MyCrypt({});
@@ -26,32 +26,61 @@ export class UserService extends DbAbstract {
     super(userRepository);
   }
 
-  async createUser(userData: UserCreateDto, createPinActivation: boolean = false) {
-    const pins = await this.myTools.generatePins({
-      semillaCode: userData.user,
-      name: userData.password,
-      status: userData.is_active.toString(),
-    });
-    const token = await this.createUserToken(userData.user, userData.name, pins.salt);
-    const pin_token = await this.mySecurity.otp({ text: token, secret: process.env.BACK_ALGORITHM_SECRET, size: 8 });
+  async createUserFromFront(userInfo: UserCreateDto) {
+    // TODO: email activación
+    const { user, password }: UserCredential = await this.descrifateCredencials(
+      { user: userInfo.user, password: userInfo.password },
+      userInfo.wizard,
+    );
 
-    let pin_activation = undefined;
-    if (createPinActivation) {
-      const baseRamdom = await this.mySecurity.numbersFromTimer(10);
-      pin_activation = await this.mySecurity.generatePasswordSeed({
-        baseRamdom,
-      });
-    }
-    const dataToSave = await this.myTools.mergeData(userData, {
+    const baseRamdom = await this.mySecurity.numbersFromTimer(10);
+    const pin_activation = await this.mySecurity.generatePasswordSeed({ baseRamdom });
+    const { pins, token, pin_token } = await this.generatePins({ ...userInfo, password });
+
+    const recordToSave: UserCreateDto = (await this.myTools.mergeData(userInfo, {
+      user,
       token,
       pin_activation,
       password: pins.dataHash,
       pin_pass: pins.pinName,
       pin_status: pins.pinStatus,
       pin_token,
-    });
+    })) as UserCreateDto;
 
-    return await this.create(dataToSave);
+    return await this.saveUser(recordToSave);
+  }
+
+  async generatePins(userInfo: UserCreateDto | UserUpdateDto): Promise<any> {
+    const pins = await this.myTools.generatePins({
+      semillaCode: userInfo.user,
+      name: userInfo.password,
+      status: userInfo.is_active.toString(),
+    });
+    const token = await this.createUserToken(userInfo.user, userInfo.name, pins.salt);
+    const pin_token = await this.mySecurity.otp({ text: token, secret: process.env.BACK_ALGORITHM_SECRET, size: 8 });
+    return { pins, token, pin_token };
+  }
+
+  async updateUser(id: string, userInfo: UserUpdateDto) {
+    const keyBaseCifrate = await this.mySecurity.decode(userInfo.wizard);
+    const { user, password }: UserCredential = await this.descrifateCredencials(
+      { user: userInfo.user, password: userInfo.password },
+      keyBaseCifrate,
+    );
+    const { pins, token, pin_token } = await this.generatePins({ ...userInfo, password });
+    const recordToSave: UserCreateDto = (await this.myTools.mergeData(userInfo, {
+      user,
+      token,
+      password: pins.dataHash,
+      pin_pass: pins.pinName,
+      pin_status: pins.pinStatus,
+      pin_token,
+    })) as UserCreateDto;
+    return this.saveUser({ id, ...recordToSave } as UserCreateDto);
+  }
+
+  async saveUser(recordToSave: UserCreateDto) {
+    return await this.create(recordToSave);
   }
 
   async createUserToken(user: string, name: string, salt: string) {
@@ -61,42 +90,35 @@ export class UserService extends DbAbstract {
     });
   }
 
-  async updateUser(id: string, body: UserUpdateDto) {
-    return this.createUser({ id, ...body } as UserCreateDto, false);
-  }
-
-  async getUser(user: string, password: string): Promise<unknown> {
+  async getUser(user: string, password: string): Promise<UserDataLogin> {
     const userDB = await this.validUser(user, password);
     return { user: userDB.id, name: userDB.name, tenant: userDB.tenant };
   }
 
   async validUser(user: string, password: string): Promise<User> {
-    const userData = await this.findOne({ where: { user }, throwError: false });
-    if (!userData) throw new NotFoundException('Credential no valid');
-    if (!userData.is_active) throw new UnauthorizedException('User is inactive');
+    const userInfo = await this.findOne({ where: { user }, throwError: false });
+    if (!userInfo) throw new NotFoundException('Credential no valid');
+    if (!userInfo.is_active) throw new UnauthorizedException('User is inactive');
 
-    const pin_token = await this.mySecurity.otp({ text: userData.token, secret: process.env.BACK_ALGORITHM_SECRET, size: 8 });
-    if (userData.pin_token !== pin_token) throw new UnauthorizedException('Credential no valid.(pt)');
+    const pin_token = await this.mySecurity.otp({ text: userInfo.token, secret: process.env.BACK_ALGORITHM_SECRET, size: 8 });
+    if (userInfo.pin_token !== pin_token) throw new UnauthorizedException('Credential no valid.(pt)');
 
-    // const jwtService = new JwtService({
-    //   secret: process.env.BACK_TOKEN_JWT_SECRET,
-    // });
-    const { sub, data } = this.jwtService.decode(userData.token) as any;
+    const { sub, data } = this.jwtService.decode(userInfo.token) as any;
 
-    if (userData.user !== sub || userData.name !== data.other) throw new UnauthorizedException('Credential no valid.(t)');
+    if (userInfo.user !== sub || userInfo.name !== data.other) throw new UnauthorizedException('Credential no valid.(t)');
 
     const pins = await this.myTools.generatePins({
-      semillaCode: userData.user,
+      semillaCode: userInfo.user,
       name: password,
-      status: userData.is_active.toString(),
+      status: userInfo.is_active.toString(),
       salt: data.salt,
     });
 
-    if (userData.password !== pins.dataHash) throw new UnauthorizedException('Credential no valid.(p)');
-    if (userData.pin_pass !== pins.pinName) throw new UnauthorizedException('Credential no valid.(pp)');
-    if (userData.pin_status !== pins.pinStatus) throw new UnauthorizedException('Credential no valid.(ps)');
+    if (userInfo.password !== pins.dataHash) throw new UnauthorizedException('Credential no valid.(p)');
+    if (userInfo.pin_pass !== pins.pinName) throw new UnauthorizedException('Credential no valid.(pp)');
+    if (userInfo.pin_status !== pins.pinStatus) throw new UnauthorizedException('Credential no valid.(ps)');
 
-    return userData;
+    return userInfo;
   }
 
   // async createReport(response: Response, userid:string ) {
@@ -133,8 +155,8 @@ export class UserService extends DbAbstract {
   //   delete report.obj;
   // }
 
-  async findByUserName(account: string): Promise<object> {
-    return await this.findOne({ where: { accound: account } });
+  async findByUserName(user: string): Promise<object> {
+    return await this.findOne({ where: { user } });
   }
 
   async checkPassword(account: string, password: string, passwordDB: string): Promise<boolean> {
@@ -174,8 +196,8 @@ export class UserService extends DbAbstract {
     return jwt;
   }
 
-  async unstructuredUser(userData: any[]): Promise<any[]> {
-    return userData.map((user) => {
+  async unstructuredUser(userInfo: any[]): Promise<any[]> {
+    return userInfo.map((user) => {
       user.roles = user.roles.map((role) => {
         const { createdAt, updatedAt, ...data } = role;
         return data;
@@ -191,10 +213,25 @@ export class UserService extends DbAbstract {
       name: process.env.BACK_SUPER_NAME,
       password: process.env.BACK_SUPER_PASSWORD,
       email: process.env.BACK_SUPER_EMAIL,
-      tenant,
       is_active: true,
+      wizard: '',
+      tenant,
     };
 
-    return await this.createUser(userSuperAdmin, false);
+    const { pins, token, pin_token } = await this.generatePins({ ...userSuperAdmin, password: userSuperAdmin.password });
+    const recordToSave: UserCreateDto = (await this.myTools.mergeData(userSuperAdmin, {
+      token,
+      password: pins.dataHash,
+      pin_pass: pins.pinName,
+      pin_status: pins.pinStatus,
+      pin_token,
+    })) as UserCreateDto;
+    return this.saveUser(recordToSave);
+  }
+
+  async descrifateCredencials(userCredentials: UserCredential, passBase: string): Promise<UserCredential> {
+    const user: string = await this.mySecurity.decodeData(userCredentials.user, passBase);
+    const password: string = await this.mySecurity.decodeData(userCredentials.password, passBase);
+    return { user, password };
   }
 }

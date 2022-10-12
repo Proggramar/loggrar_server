@@ -6,23 +6,16 @@ import { JwtService } from '@nestjs/jwt';
 
 import { MyCrypt, MySecurity } from '@common/helpers/security';
 import { JwtPayLoad, JwtTenant } from '@common/interfaces';
-import { UserCredentials } from './dto';
 import { MyTools } from '@common/helpers/varius';
 
 import { UserService } from '@safety/users/user.service';
 import { EnterpriseService } from '@system/enterprises/enterprise.service';
 import { Enterprise } from '@system/enterprises/entities/enterprise.entity';
 import { UserBranchesService } from '@safety/users-branches/user-branches.service';
-import { UserBranches } from '@safety/users-branches/entities/user-branches.entity';
 import { BranchService } from '@system/branches/branch.service';
-import { RolService } from '@modules/safety/roles/rol.service';
+import { RolService } from '@safety/roles/rol.service';
 import { PermissionService } from '@safety/permissions/permission.service';
-import { User } from '@safety/users/entities/user.entity';
-
-export interface UserValidated {
-  user: string;
-  password: string;
-}
+import { UserCredential, UserDataLogin } from '@safety/users/interfaces';
 
 @Injectable()
 export class AuthService {
@@ -65,6 +58,7 @@ export class AuthService {
 
     const other: object = { uuid: prepapeLoginUUID, otp, passBase };
     const tenantDefault: JwtTenant = {
+      id: '',
       database: process.env.BACK_DATABASE_NAME,
       host: process.env.BACK_DATABASE_HOST,
       port: +process.env.BACK_DATABASE_PORT,
@@ -82,7 +76,7 @@ export class AuthService {
     return { token, otp, wizard: passBase, duration };
   }
 
-  async login(userCredentials: UserCredentials, request: Request, userReq: any) {
+  async login(userCredentials: UserCredential, request: Request, userReq: any) {
     const ip = userReq.data.ip;
     const otp = userReq.data.other.otp;
     const passBase = userReq.data.other.passBase;
@@ -90,11 +84,11 @@ export class AuthService {
 
     await this.myTools.validateIP(ip, ipToValidate);
     await this.myTools.validateOTP(userCredentials.otp, otp);
-    const { user, password } = await this.validateCredentials(userCredentials, passBase);
+    const { user, password } = await this.userService.descrifateCredencials(userCredentials, passBase);
 
-    const userDB: any = await this.userService.getUser(user, password);
+    const userDB: UserDataLogin = await this.userService.getUser(user, password);
     const enterprise: Enterprise = await this.enterpriseService.findOne({ where: { id: userDB.tenant } });
-    const tenantDatabase = JSON.parse(enterprise.database_information);
+    const tenantDatabase: JwtTenant = { ...JSON.parse(enterprise.database_information), id: userDB.tenant } as JwtTenant;
     const toExpire = await this.enterpriseService.checkEnterpriseToken(enterprise);
 
     const branchesRoles: any[] = await this.userBranchesService.findBranches(userDB.user);
@@ -126,11 +120,5 @@ export class AuthService {
     });
 
     return userData;
-  }
-
-  async validateCredentials(userCredentials: UserCredentials, passBase: string): Promise<UserValidated> {
-    const user: string = await this.mySecurity.decodeData(userCredentials.user, passBase);
-    const password: string = await this.mySecurity.decodeData(userCredentials.password, passBase);
-    return { user, password };
   }
 }

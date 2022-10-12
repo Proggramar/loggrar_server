@@ -15,6 +15,7 @@ export interface JwtPayLoad {
 }
 
 export interface JwtTenant {
+  id: string;
   host: string;
   port: number;
   database: string;

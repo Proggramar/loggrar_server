@@ -1,16 +1,17 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsBoolean, IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UserCreateDto {
   @ApiProperty()
   @MaxLength(20)
+  @IsOptional()
   @IsString()
-  readonly id?: string;
+  id?: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  @MaxLength(20)
-  @MinLength(5)
+  @MaxLength(200)
+  @MinLength(10)
   @IsString()
   readonly user: string;
 
@@ -23,7 +24,7 @@ export class UserCreateDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  @MaxLength(100)
+  @MaxLength(200)
   readonly password: string;
 
   @ApiProperty()
@@ -32,11 +33,17 @@ export class UserCreateDto {
   readonly email: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  readonly tenant: string;
-
-  @ApiProperty()
   @IsBoolean()
   readonly is_active: boolean;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(10)
+  readonly wizard: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  readonly tenant?: string;
 }

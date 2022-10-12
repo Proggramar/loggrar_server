@@ -186,8 +186,9 @@ export abstract class DbAbstract {
   private handleDBExceptions(error: any) {
     if (error.code == '11000') throw new ConflictException('Duplicate entry');
     const myTableLogger = new TableLogger();
+    const message = process.env.NODE_ENV == 'dev' ? error.message : 'Unexpected error, check server logs table';
 
     myTableLogger.logProcess(ValidAcions.error, 'exception', '', `${error.code} - ${error.message}`);
-    throw new InternalServerErrorException('Unexpected error, check server table logs');
+    throw new InternalServerErrorException(message);
   }
 }
