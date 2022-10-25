@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
-
-//#region
-//#endregion
+import { LoggrarSettingModules } from '@loggrar/setting/setting.modules';
 
 @Module({
-  imports: [],
+  imports: [LoggrarSettingModules],
 })
 export class MyAppModules {}

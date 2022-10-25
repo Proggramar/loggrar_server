@@ -117,6 +117,12 @@ export class UserController {
     @GetUser('data') loginData: any,
   ): Promise<TypeResponse> {
     const record: any = await this.controllerService.updateUser(id, { ...body, tenant: loginData.tenant.id });
+    if (record.sqlState && typeof record.sqlState === 'string') {
+      if (record.code == 'ER_DUP_ENTRY') {
+        return toBackResponse(record.sqlMessage, body, HttpStatus.CONFLICT);
+      }
+      throw new HttpException('Error updating data', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     return toBackResponse('Record updated successfully');
   }
 }

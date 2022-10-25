@@ -2,6 +2,8 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -35,8 +37,13 @@ export abstract class DbAbstract {
   private readonly preventSQLInjection = new MySecurity();
   protected constructor(protected readonly repository: Repository<any>) {}
 
-  async all({ select = {}, where = {}, order = {}, relations = {} }: GetRecordService): Promise<any[]> {
-    return await this.repository.find({ select, where, relations, order });
+  async all({
+    select = undefined,
+    where = undefined,
+    order = undefined,
+    relations = undefined,
+  }: GetRecordService): Promise<any[]> {
+    return await this.repository.find({ select, where: where, relations, order });
   }
 
   async paginate({
@@ -93,7 +100,9 @@ export abstract class DbAbstract {
     if (!recordSaved) throw new NotFoundException(`Record #${id} does not found for update`);
 
     try {
-      return await this.repository.update(id, dataToUpdate);
+      const updateResult = await this.repository.update(id, dataToUpdate);
+      if (updateResult.affected && updateResult.affected > 0) return updateResult;
+      throw new HttpException('Error updating data', HttpStatus.BAD_REQUEST);
     } catch (error) {
       this.handleDBExceptions(error);
     }
@@ -103,7 +112,9 @@ export abstract class DbAbstract {
     const recordSaved = await this.findOne(condition);
 
     try {
-      return await this.repository.remove(recordSaved);
+      const deleteResult = await this.repository.remove(recordSaved);
+      if (deleteResult.affected && deleteResult.affected > 0) return deleteResult;
+      throw new HttpException('Error deleting data', HttpStatus.BAD_REQUEST);
     } catch (error) {
       this.handleDBExceptions(error);
     }
@@ -121,7 +132,14 @@ export abstract class DbAbstract {
     let filterStaticFromClient = '';
     let select: string = '';
     let orderBy: string = '';
+    let aliasMain: string = '';
+    let joins: string = '';
     const dataFilters: any[] = [];
+
+    const tableName = this.repository.metadata.givenTableName;
+    if (relations.length > 0) {
+      aliasMain = tableName + '.';
+    }
     // const dataFilters: Record<string, any> = {};
     // const  lab: { [k: string]: any } = {};
     if (filterFromFieldFilterClient !== '') await this.preventSQLInjection.checkSqlInjection(filterFromFieldFilterClient);
@@ -136,13 +154,23 @@ export abstract class DbAbstract {
           }
         } else {
           if (select.length > 0) select += ', ';
-          select += col['field'];
+          select += aliasMain + col['field'];
           if (filterFromFieldFilterClient != '') {
             if (!isEmpty(col['filter']) && col['filter'] == true) {
               if (filter !== '') filter += ' or ';
-              filter += `${col['field']} like '%${filterFromFieldFilterClient}%' `;
+              filter += aliasMain + `${col['field']} like '%${filterFromFieldFilterClient}%' `;
             }
           }
+        }
+      }
+    }
+    if (relations.length > 0) {
+      for (const join of relations) {
+        joins += `left join ${join.table} on ${tableName}.${join.fieldJoin} ${join.fieldComparation} ${join.table}.${join.fieldOrigin} `;
+        const joinColumns = join.selectFields.split(',');
+        for (const col of joinColumns) {
+          if (select.length > 0) select += ', ';
+          select += `${join.table}.${col} as ${join.fieldAs}_${col}`;
         }
       }
     }
@@ -159,20 +187,21 @@ export abstract class DbAbstract {
 
     if (sortBy) {
       if (!Array.isArray(sortBy) && sortBy !== '') {
-        orderBy = sortBy + (descending ? ' DESC' : ' ASC');
+        orderBy = aliasMain + sortBy + (descending ? ' DESC' : ' ASC');
       }
 
       if (Array.isArray(sortBy)) {
         sortBy.map((col, idx) => {
           if (orderBy != '') orderBy += ', ';
-          orderBy = col + (descending[idx] ? ' DESC' : ' ASC');
+          orderBy = aliasMain + col + (descending[idx] ? ' DESC' : ' ASC');
         });
       }
     }
     if (orderBy !== '') orderBy = 'ORDER BY ' + orderBy;
     if (filter !== '') filter = 'where ' + filter;
-    const tableName = this.repository.metadata.givenTableName;
-    const sqlToExecute = `select ${select} from ${tableName} ${filter} ${orderBy} LIMIT ${rowsPerPage} OFFSET ${offset}`;
+
+    const sqlToExecute = `select ${select} from ${tableName} ${joins}${filter} ${orderBy} LIMIT ${rowsPerPage} OFFSET ${offset}`;
+    // console.log(sqlToExecute);
 
     try {
       const data = await this.repository.query(sqlToExecute);

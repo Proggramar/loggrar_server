@@ -150,8 +150,7 @@ export class RolController {
   @Patch(':id')
   async update(@Param('id', ParseUUIDPipe) id: string, @Body() body: RolUpdateDto): Promise<TypeResponse> {
     const updateResult: any = await this.controllerService.update(id, body);
-    if (updateResult.affected && updateResult.affected > 0) return toBackResponse('Record updated successfully');
-    throw new HttpException('Error updating data', HttpStatus.BAD_REQUEST);
+    return toBackResponse('Record updated successfully');
   }
 
   @ApiOperation({ summary: 'Delete a rol', description: 'delete a rol by your id' })
@@ -166,7 +165,6 @@ export class RolController {
   @Delete(':id')
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const deleteResult: any = await this.controllerService.remove({ id });
-    if (deleteResult.affected && deleteResult.affected > 0) return toBackResponse('Record deleted successfully');
-    throw new HttpException('Error deleting data', HttpStatus.BAD_REQUEST);
+    return toBackResponse('Record deleted successfully');
   }
 }
