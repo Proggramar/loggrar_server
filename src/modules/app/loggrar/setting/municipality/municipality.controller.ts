@@ -1,16 +1,14 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Query, Version } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, Version } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { plainToInstance } from 'class-transformer';
 
 import { ValidRoles } from '@safety/roles/enums';
-import { Auth, GetUser, RolProtected } from '@common/decorators';
+import { Auth } from '@common/decorators';
 import { toBackResponse, TypeResponse } from '@common/helpers/responses';
 import { ParamsGetList } from '@common/database';
 import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
 
 import { MunicipalityCreateDto, MunicipalityUpdateDto } from './dto';
 import { MunicipalityService } from './municipality.service';
-import { MunicipalitySetting } from './entities/municipality.entity';
 
 @ApiTags('Municipalities')
 @ApiBearerAuth()
@@ -64,7 +62,7 @@ export class MunicipalityController {
   @Get()
   async all(): Promise<TypeResponse> {
     const { data, meta } = await this.controllerService.paginate({ relations: { department: true } });
-    return toBackResponse('Records returned', { records: plainToInstance(MunicipalitySetting, data), meta });
+    return toBackResponse('Records returned', { records: data, meta });
   }
 
   @ApiOperation({ summary: 'Create a municipality', description: 'Create a new municipality' })

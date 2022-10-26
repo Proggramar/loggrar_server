@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Query, Version } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { plainToInstance } from 'class-transformer';
 
 import { ValidRoles } from '@safety/roles/enums';
 import { Auth, GetUser, RolProtected } from '@common/decorators';
@@ -10,7 +9,6 @@ import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
 
 import { CurrencyCreateDto, CurrencyUpdateDto } from './dto';
 import { CurrencyService } from './currency.service';
-import { CurrencySetting } from './entities/currency.entity';
 
 @ApiTags('Currencies')
 @ApiBearerAuth()
@@ -83,7 +81,7 @@ export class CurrencyController {
   @Get(':id')
   async get(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const data = await this.controllerService.findOne({ where: { id } });
-    return toBackResponse('Record returned', { records: plainToInstance(CurrencySetting, data) });
+    return toBackResponse('Record returned', { records: data });
   }
 
   @ApiOperation({ summary: 'Update a currency', description: 'Update a currency by your id' })

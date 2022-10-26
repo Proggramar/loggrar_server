@@ -10,22 +10,18 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
   Version,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { plainToInstance } from 'class-transformer';
 
 import { Auth } from '@common/decorators';
 import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
-import { RolProtected } from '@common/decorators/rol-protected.decorator';
-import { UserRoleGuard } from '@common/guards';
-import { MyModuleService } from './module.service';
 import { ValidRoles } from '@safety/roles/enums';
-import { MyModuleCreateDto, MyModuleUpdateDto } from './dto';
-import { MyModule } from '@modules/safety/app-modules/entities/my-module.entity';
-import { toBackResponse, TypeResponse } from '@common/helpers/responses';
 import { ParamsGetList } from '@common/database';
+import { toBackResponse, TypeResponse } from '@common/helpers/responses';
+
+import { MyModuleCreateDto, MyModuleUpdateDto } from './dto';
+import { MyModuleService } from './module.service';
 
 @ApiTags('Modules')
 @ApiBearerAuth()
@@ -63,7 +59,7 @@ export class ModuleController {
   @Get()
   async all(): Promise<TypeResponse> {
     const { data, meta } = await this.controllerService.paginate({});
-    return toBackResponse('Records returned', { records: plainToInstance(MyModule, data), meta });
+    return toBackResponse('Records returned', { records: data, meta });
   }
 
   @ApiOperation({ summary: 'Create a app-module', description: 'Create a new app-module' })
@@ -92,7 +88,7 @@ export class ModuleController {
   @Get(':id')
   async get(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const data = await this.controllerService.findOne({ where: { id } });
-    return toBackResponse('Record returned', { records: plainToInstance(MyModule, data) });
+    return toBackResponse('Record returned', { records: data });
   }
 
   @ApiOperation({ summary: 'Update a app-module', description: 'Update a app-module by your id' })

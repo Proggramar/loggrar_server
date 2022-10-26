@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, Version } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { plainToInstance } from 'class-transformer';
 
 import { ValidRoles } from '@safety/roles/enums';
 import { Auth, GetUser, RolProtected } from '@common/decorators';
@@ -10,7 +9,6 @@ import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
 
 import { UnitService } from './unit.service';
 import { UnitCreateDto, UnitUpdateDto } from './dto';
-import { UnitSetting } from './entities/unit.entity';
 
 @ApiTags('Units')
 @ApiBearerAuth()
@@ -52,7 +50,7 @@ export class UnitController {
   @Get()
   async all(): Promise<TypeResponse> {
     const { data, meta } = await this.controllerService.paginate({});
-    return toBackResponse('Records returned', { records: plainToInstance(UnitSetting, data), meta });
+    return toBackResponse('Records returned', { records: data, meta });
   }
 
   @ApiOperation({ summary: 'Create a Unit', description: 'Create a new unit' })
@@ -83,7 +81,7 @@ export class UnitController {
   @Get(':id')
   async get(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const data = await this.controllerService.findOne({ where: { id } });
-    return toBackResponse('Record returned', { records: plainToInstance(UnitSetting, data) });
+    return toBackResponse('Record returned', { records: data });
   }
 
   @ApiOperation({ summary: 'Update a unit', description: 'Update a unit by your id' })

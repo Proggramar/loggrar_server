@@ -1,16 +1,14 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, Version } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { plainToInstance } from 'class-transformer';
 
 import { ValidRoles } from '@safety/roles/enums';
-import { Auth, GetUser, RolProtected } from '@common/decorators';
+import { Auth, GetUser } from '@common/decorators';
 import { toBackResponse, TypeResponse } from '@common/helpers/responses';
 import { ParamsGetList } from '@common/database';
 import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
 
 import { DocumentService } from './document.service';
 import { DocumentCreateDto, DocumentUpdateDto } from './dto';
-import { DocumentSetting } from './entities/document.entity';
 
 @ApiTags('Documents')
 @ApiBearerAuth()
@@ -52,7 +50,7 @@ export class DocumentController {
   @Get()
   async all(): Promise<TypeResponse> {
     const { data, meta } = await this.controllerService.paginate({});
-    return toBackResponse('Records returned', { records: plainToInstance(DocumentSetting, data), meta });
+    return toBackResponse('Records returned', { records: data, meta });
   }
 
   @ApiOperation({ summary: 'Create a document', description: 'Create a new document' })
@@ -83,7 +81,7 @@ export class DocumentController {
   @Get(':id')
   async get(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const data = await this.controllerService.findOne({ where: { id } });
-    return toBackResponse('Record returned', { records: plainToInstance(DocumentSetting, data) });
+    return toBackResponse('Record returned', { records: data });
   }
 
   @ApiOperation({ summary: 'Update a document', description: 'Update a document by your id' })

@@ -1,32 +1,14 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpException,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Query,
-  Version,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, Version } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiQuery } from '@nestjs/swagger';
-import { plainToInstance } from 'class-transformer';
 
 import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
-
-import { Auth } from '@common/decorators';
-// import { UserRoleGuard } from '@common/guards';
+import { Auth, GetUser } from '@common/decorators';
 import { toBackResponse, TypeResponse } from '@common/helpers/responses';
-
 import { ValidRoles } from '@safety/roles/enums';
-import { RolService } from './rol.service';
-import { Rol } from './entities/rol.entity';
-import { RolCreateDto, RolUpdateDto } from './dto';
-import { GetUser } from '@common/decorators/';
 import { ParamsGetList } from '@common/database';
+
+import { RolService } from './rol.service';
+import { RolCreateDto, RolUpdateDto } from './dto';
 
 @ApiTags('Rol')
 @ApiBearerAuth()
@@ -71,7 +53,6 @@ export class RolController {
   async all(): Promise<TypeResponse> {
     const { data, meta } = await this.controllerService.paginate({});
     return toBackResponse('Records returned', { records: data, meta });
-    // return toBackResponse('Records returned', { records: plainToInstance(Rol, data), meta });
   }
 
   @ApiOperation({ summary: 'Get a rol', description: 'Get a rol by your id' })
@@ -86,7 +67,7 @@ export class RolController {
   @Get(':id')
   async get(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const data = await this.controllerService.findOne({ where: { id } });
-    return toBackResponse('Record returned', { records: plainToInstance(Rol, data) });
+    return toBackResponse('Record returned', { records: data });
   }
 
   @ApiOperation({ summary: 'Get permission for a rol', description: 'Get permission for a rol by your id' })

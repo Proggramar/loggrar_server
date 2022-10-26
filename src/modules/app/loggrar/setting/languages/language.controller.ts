@@ -1,16 +1,14 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Query, Version } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { plainToInstance } from 'class-transformer';
 
 import { ValidRoles } from '@safety/roles/enums';
-import { Auth, GetUser, RolProtected } from '@common/decorators';
+import { Auth } from '@common/decorators';
 import { toBackResponse, TypeResponse } from '@common/helpers/responses';
 import { ParamsGetList } from '@common/database';
 import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
 
 import { LanguageCreateDto, LanguageUpdateDto } from './dto';
 import { LanguageService } from './Language.service';
-import { LanguageSetting } from './entities/Language.entity';
 
 @ApiTags('Languages')
 @ApiBearerAuth()
@@ -52,7 +50,7 @@ export class LanguageController {
   @Get()
   async all(): Promise<TypeResponse> {
     const { data, meta } = await this.controllerService.paginate({});
-    return toBackResponse('Records returned', { records: plainToInstance(LanguageSetting, data), meta });
+    return toBackResponse('Records returned', { records: data, meta });
   }
 
   @ApiOperation({ summary: 'Create a Language', description: 'Create a new Language' })
@@ -83,7 +81,7 @@ export class LanguageController {
   @Get(':id')
   async get(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const data = await this.controllerService.findOne({ where: { id } });
-    return toBackResponse('Record returned', { records: plainToInstance(LanguageSetting, data) });
+    return toBackResponse('Record returned', { records: data });
   }
 
   @ApiOperation({ summary: 'Update a Language', description: 'Update a Language by your id' })

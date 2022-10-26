@@ -1,30 +1,14 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpException,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Query,
-  UseGuards,
-  Version,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Patch, Post, Query, Version } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { plainToInstance } from 'class-transformer';
 
 import { Auth, GetUser, RolProtected } from '@common/decorators';
 import { toBackResponse, TypeResponse } from '@common/helpers/responses';
 import { ValidRoles } from '@safety/roles/enums';
+import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
+import { ParamsGetList } from '@common/database';
 
 import { UserCreateDto, UserUpdateDto } from './dto';
-import { User } from './entities/user.entity';
 import { UserService } from './user.service';
-import { ParamsGetList } from '@common/database';
-import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
 
 @ApiTags('User')
 @ApiBearerAuth()
@@ -66,7 +50,7 @@ export class UserController {
   @Get()
   async all(): Promise<TypeResponse> {
     const { data, meta } = await this.controllerService.paginate({});
-    return toBackResponse('Records returned', { records: plainToInstance(User, data), meta });
+    return toBackResponse('Records returned', { records: data, meta });
   }
 
   @ApiOperation({ summary: 'Create a User', description: 'Create a new user' })
@@ -97,7 +81,7 @@ export class UserController {
   @Get(':id')
   async get(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const data = await this.controllerService.findOne({ where: { id } });
-    return toBackResponse('Record returned', { records: plainToInstance(User, data) });
+    return toBackResponse('Record returned', { records: data });
   }
 
   @ApiOperation({ summary: 'Update a user', description: 'Update a user by your id' })

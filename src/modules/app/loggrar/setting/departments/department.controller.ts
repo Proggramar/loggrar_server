@@ -1,22 +1,5 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpException,
-  HttpStatus,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Put,
-  Query,
-  UseGuards,
-  Version,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, Version } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { plainToInstance } from 'class-transformer';
 
 import { ValidRoles } from '@safety/roles/enums';
 import { Auth, GetUser, RolProtected } from '@common/decorators';
@@ -25,7 +8,6 @@ import { ParamsGetList } from '@common/database';
 import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
 
 import { DepartmentCreateDto, DepartmentUpdateDto } from './dto';
-import { DepartmentSetting } from './entities/department.entity';
 import { DepartmentService } from './department.service';
 
 @ApiTags('Deparments')

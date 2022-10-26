@@ -1,33 +1,14 @@
-import { Response, Request } from 'express';
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpException,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Query,
-  Req,
-  UseGuards,
-  Version,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, Req, Version } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { plainToInstance } from 'class-transformer';
 
+import { Auth } from '@common/decorators';
 import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
-import { RolProtected } from '@common/decorators';
-import { UserRoleGuard } from '@common/guards';
 import { toBackResponse, TypeResponse } from '@common/helpers/responses';
-
-import { ValidRoles } from '@safety/roles/enums';
-import { BranchService } from './branch.service';
-import { BranchCreateDto, BranchUpdateDto } from './dto';
-import { Branch } from './entities/branch.entity';
 import { ParamsGetList } from '@common/database';
+import { ValidRoles } from '@safety/roles/enums';
+
+import { BranchCreateDto, BranchUpdateDto } from './dto';
+import { BranchService } from './branch.service';
 
 @ApiTags('Branches')
 @ApiBearerAuth()
@@ -49,6 +30,7 @@ export class BranchController {
   })
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Get('listGrid')
   async listGrid(@Query('params') params: string): Promise<TypeResponse> {
     const pagination: ParamsGetList = JSON.parse(params);
@@ -64,10 +46,11 @@ export class BranchController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Get()
   async all(): Promise<TypeResponse> {
     const { data, meta } = await this.controllerService.paginate({});
-    return toBackResponse('Records returned', { records: plainToInstance(Branch, data), meta });
+    return toBackResponse('Records returned', { records: data, meta });
   }
 
   @ApiOperation({ summary: 'Create a branch', description: 'Create a new branch' })
@@ -79,8 +62,9 @@ export class BranchController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.CREATED)
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Post()
-  async create(@Body() body: BranchCreateDto, @Req() request: Request): Promise<TypeResponse> {
+  async create(@Body() body: BranchCreateDto): Promise<TypeResponse> {
     const record: any = await this.controllerService.createBranch({ ...body });
     return toBackResponse('Record created successfully');
   }
@@ -94,10 +78,11 @@ export class BranchController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Get(':id')
   async get(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const data = await this.controllerService.findOne({ where: { id } });
-    return toBackResponse('Record returned', { records: plainToInstance(Branch, data) });
+    return toBackResponse('Record returned', { records: data });
   }
 
   @ApiOperation({ summary: 'Update a branch', description: 'Update a branch by your id' })
@@ -110,6 +95,7 @@ export class BranchController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Patch(':id')
   async update(@Param('id', ParseUUIDPipe) id: string, @Body() body: BranchUpdateDto): Promise<TypeResponse> {
     const record: any = await this.controllerService.updateBranch(id, body);
