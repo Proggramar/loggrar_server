@@ -4,14 +4,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '@safety/users/user.module';
 import { PermissionModule } from '@safety/permissions/permission.module';
 
-import { ReasonService } from './reason.service';
-import { ReasonController } from './reason.controller';
+import { PayRollReasonService } from './reason.service';
+import { PayRollReasonController } from './reason.controller';
 import { ReasonInitiate } from './entities/reason.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ReasonInitiate]), UserModule, PermissionModule],
-  controllers: [ReasonController],
-  providers: [ReasonService],
-  exports: [ReasonService],
+  controllers: [PayRollReasonController],
+  providers: [PayRollReasonService],
+  exports: [PayRollReasonService],
 })
 export class PayRollReasonModule {}

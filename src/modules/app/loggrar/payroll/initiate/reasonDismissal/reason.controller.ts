@@ -6,14 +6,14 @@ import { Auth } from '@common/decorators';
 import { toBackResponse, TypeResponse } from '@common/helpers/responses';
 import { ParamsGetList } from '@common/database';
 import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
-import { ReasonService } from './reason.service';
+import { PayRollReasonService } from './reason.service';
 import { ReasonCreateDto, ReasonUpdateDto } from './dto';
 
-@ApiTags('CivilStates')
+@ApiTags('Reason')
 @ApiBearerAuth()
-@Controller('loggrar/Setting/Civil')
-export class CivilController {
-  constructor(private controllerService: ReasonService) {}
+@Controller('loggrar/PayRoll/Initiate/Reason')
+export class PayRollReasonController {
+  constructor(private controllerService: PayRollReasonService) {}
 
   @ApiOperation({ summary: 'Get reason for dismissal for grid view.', description: 'Get reason for dismissal for grid view.' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Process OK.' })

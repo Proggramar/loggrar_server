@@ -6,7 +6,7 @@ import { DbAbstract } from '@common/database';
 import { ReasonInitiate } from './entities/reason.entity';
 
 @Injectable()
-export class ReasonService extends DbAbstract {
+export class PayRollReasonService extends DbAbstract {
   constructor(
     @InjectRepository(ReasonInitiate)
     private readonly reasonRepository: Repository<ReasonInitiate>,
