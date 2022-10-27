@@ -184,7 +184,7 @@
   {
     "id_old": 40,
     "name": "Centros Costo",
-    "component": "InitiateCostcenter",
+    "component": "StartCostcenter",
     "route": "",
     "father_id": 39,
     "menu_order": 3,
@@ -193,7 +193,7 @@
   {
     "id_old": 41,
     "name": "Fuentes",
-    "component": "InitiateSource",
+    "component": "StartSource",
     "route": "",
     "father_id": 39,
     "menu_order": 4,
@@ -202,7 +202,7 @@
   {
     "id_old": 42,
     "name": "Impuestos",
-    "component": "InitiateTax",
+    "component": "StartTax",
     "route": "",
     "father_id": 39,
     "menu_order": 2,
@@ -211,7 +211,7 @@
   {
     "id_old": 43,
     "name": "Plantilla de transacciones",
-    "component": "InitiateTemplate",
+    "component": "StartTemplate",
     "route": "",
     "father_id": 39,
     "menu_order": 1,
