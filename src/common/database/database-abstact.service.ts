@@ -121,20 +121,18 @@ export abstract class DbAbstract {
   }
 
   async getDataGrid(queryParams: any) {
-    const { sortBy, descending, page, columns, filterFromEndPoint = '', relations = [] } = queryParams;
-
+    const { sortBy, descending, page, dataTableColumns, filterFromEndPoint = '', relations = [] } = queryParams;
     const rowsPerPage = queryParams.rowsPerPage == 'Todos' ? 0 : queryParams.rowsPerPage;
-
     let offset: number = (page - 1) * rowsPerPage;
-    let filter: string = '';
+    let toFilter: string = '';
     let filterPrev: string = '';
     let filterFromFieldFilterClient: string = !isEmpty(queryParams.filter) ? String(queryParams.filter).toLowerCase() : '';
     let filterStaticFromClient = '';
-    let select: string = '';
+    let fieldsToSelect: string = '';
     let orderBy: string = '';
     let aliasMain: string = '';
-    let joins: string = '';
-    const dataFilters: any[] = [];
+    let toJoins: string = '';
+    // const dataFilters: any[] = [];
 
     const tableName = this.repository.metadata.givenTableName;
     if (relations.length > 0) {
@@ -144,45 +142,29 @@ export abstract class DbAbstract {
     // const  lab: { [k: string]: any } = {};
     if (filterFromFieldFilterClient !== '') await this.preventSQLInjection.checkSqlInjection(filterFromFieldFilterClient);
 
-    for (const col of columns) {
-      if (!(!isEmpty(col['fromdual']) && col['fromdual'])) {
-        if (!isEmpty(col['filterFieldData'])) {
-          if (!isEmpty(col['field'])) {
-            if (filterStaticFromClient != '') filterStaticFromClient += ' and ';
-            await this.preventSQLInjection.checkSqlInjection(col['filterFieldData']);
-            filterStaticFromClient += col['field'] + col['filterFieldDataOperador'] + col['filterFieldData'];
-          }
-        } else {
-          if (select.length > 0) select += ', ';
-          select += aliasMain + col['field'];
-          if (filterFromFieldFilterClient != '') {
-            if (!isEmpty(col['filter']) && col['filter'] == true) {
-              if (filter !== '') filter += ' or ';
-              filter += aliasMain + `${col['field']} like '%${filterFromFieldFilterClient}%' `;
-            }
-          }
-        }
-      }
-    }
+    const { fieldsSelect, filter } = await this.buildSelectAndFilter(
+      dataTableColumns,
+      aliasMain,
+      filterFromFieldFilterClient,
+      filterStaticFromClient,
+    );
+    fieldsToSelect = fieldsSelect;
+    toFilter = filter;
+
     if (relations.length > 0) {
-      for (const join of relations) {
-        joins += `left join ${join.table} on ${tableName}.${join.fieldJoin} ${join.fieldComparation} ${join.table}.${join.fieldOrigin} `;
-        const joinColumns = join.selectFields.split(',');
-        for (const col of joinColumns) {
-          if (select.length > 0) select += ', ';
-          select += `${join.table}.${col} as ${join.fieldAs}_${col}`;
-        }
-      }
+      const { joins, addSelects } = await this.buildRelation(tableName, relations);
+      toJoins = joins;
+      fieldsToSelect += ',' + addSelects;
     }
 
     if (filterStaticFromClient !== '') {
-      if (filter !== '') filterPrev = ' and (' + filter + ')';
-      filter = filterStaticFromClient + filterPrev;
+      if (toFilter !== '') filterPrev = ' and (' + toFilter + ')';
+      toFilter = filterStaticFromClient + filterPrev;
     }
 
     if (filterFromEndPoint !== '') {
-      if (filter !== '') filterPrev = ' and (' + filter + ')';
-      filter = filterFromEndPoint + filterPrev;
+      if (toFilter !== '') filterPrev = ' and (' + toFilter + ')';
+      toFilter = filterFromEndPoint + filterPrev;
     }
 
     if (sortBy) {
@@ -198,18 +180,61 @@ export abstract class DbAbstract {
       }
     }
     if (orderBy !== '') orderBy = 'ORDER BY ' + orderBy;
-    if (filter !== '') filter = 'where ' + filter;
+    if (toFilter !== '') toFilter = 'where ' + filter;
 
-    const sqlToExecute = `select ${select} from ${tableName} ${joins}${filter} ${orderBy} LIMIT ${rowsPerPage} OFFSET ${offset}`;
-    // console.log(sqlToExecute);
+    const sqlToExecute = `select ${fieldsToSelect} from ${tableName} ${toJoins}${toFilter} ${orderBy} LIMIT ${rowsPerPage} OFFSET ${offset}`;
 
     try {
       const data = await this.repository.query(sqlToExecute);
-
       return { data, meta: { total: data.length, page, rowsPerPage } };
     } catch (error) {
       this.handleDBExceptions(error);
     }
+  }
+
+  private async buildRelation(tableName: string, relations: any): Promise<any> {
+    let joins: string = '';
+    let addSelects: string = '';
+    for (const join of relations) {
+      joins += `left join ${join.table} on ${tableName}.${join.fieldJoin} ${join.fieldComparation} ${join.table}.${join.fieldOrigin} `;
+      const joinColumns = join.selectFields.split(',');
+      for (const col of joinColumns) {
+        if (addSelects.length > 0) addSelects += ', ';
+        addSelects += `${join.table}.${col} as ${join.fieldAs}_${col}`;
+      }
+    }
+    return { joins, addSelects };
+  }
+
+  private async buildSelectAndFilter(
+    dataTableColumns: any,
+    aliasMain: string,
+    filterFromFieldFilterClient: string,
+    filterStaticFromClient: string,
+  ): Promise<any> {
+    let fieldsSelect: string = '';
+    let filter: string = '';
+    for (const col of dataTableColumns) {
+      if (!(!isEmpty(col['fromdual']) && col['fromdual'])) {
+        if (!isEmpty(col['filterFieldData'])) {
+          if (!isEmpty(col['field'])) {
+            if (filterStaticFromClient != '') filterStaticFromClient += ' and ';
+            await this.preventSQLInjection.checkSqlInjection(col['filterFieldData']);
+            filterStaticFromClient += col['field'] + col['filterFieldDataOperador'] + col['filterFieldData'];
+          }
+        } else {
+          if (fieldsSelect.length > 0) fieldsSelect += ', ';
+          fieldsSelect += aliasMain + col['field'];
+          if (filterFromFieldFilterClient != '') {
+            if (!isEmpty(col['filter']) && col['filter'] == true) {
+              if (filter !== '') filter += ' or ';
+              filter += aliasMain + `${col['field']} like '%${filterFromFieldFilterClient}%' `;
+            }
+          }
+        }
+      }
+    }
+    return { fieldsSelect, filter, filterStaticFromClient };
   }
 
   private handleDBExceptions(error: any) {
