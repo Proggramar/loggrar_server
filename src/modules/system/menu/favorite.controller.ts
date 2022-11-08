@@ -18,8 +18,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
-import { RolProtected } from '@common/decorators';
-import { UserRoleGuard } from '@common/guards';
+import { Auth } from '@common/decorators';
 import { FavoriteService } from './favorite.service';
 import { ValidRoles } from '@safety/roles/enums';
 import { FavoriteCreateDto } from './dto';
@@ -38,15 +37,9 @@ export class FavoriteController {
   @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Unauthorized information.' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' })
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
-  // @RoleProtected([
-  //   ValidRoles.SUPER,
-  //   ValidRoles.ADMINISTRATOR,
-  //   ValidRoles.OPERATOR,
-  //   ValidRoles.ACCOUNTANT,
-  //   ValidRoles.SYSTEM,
-  // ])
   @Version('1')
   @HttpCode(HttpStatus.CREATED)
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant, ValidRoles.operator] })
   @Post()
   async create(@Body() body: FavoriteCreateDto, @GetUser('user_id') userId: string): Promise<TypeResponse> {
     const record: any = await this.controllerService.create({ ...body, user_id: userId });
@@ -58,14 +51,8 @@ export class FavoriteController {
   @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Unauthorized information.' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' })
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
-  // @RoleProtected([
-  //   ValidRoles.SUPER,
-  //   ValidRoles.ADMINISTRATOR,
-  //   ValidRoles.OPERATOR,
-  //   ValidRoles.ACCOUNTANT,
-  //   ValidRoles.SYSTEM,
-  // ])
   @Version('1')
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant, ValidRoles.operator] })
   @Delete(':id')
   async remove(@Param('id', ParseUUIDPipe) id: string, @GetUser('sub') userId: string) {
     this.controllerService.removeFavorite(userId, id);

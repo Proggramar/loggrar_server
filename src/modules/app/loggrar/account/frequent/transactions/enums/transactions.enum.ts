@@ -1,0 +1,16 @@
+export enum Origin {
+  account = 'Contabilidad',
+  bank = 'Banco',
+  cash = 'Caja',
+  inventory = 'Inventario',
+  shoping = 'Compras',
+  sales = 'Ventas',
+  payroll = 'Nómina',
+  treasury = 'Tesorería',
+  budget = 'Presupuesto',
+  production = 'Producción',
+  portfolioReceivable = 'Cartera por Cobrar',
+  portfolioPayable = 'Cartera por Pagar',
+  fixed_assets = 'Activos Fijos',
+  other = 'Otro',
+}

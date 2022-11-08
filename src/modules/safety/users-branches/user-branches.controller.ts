@@ -8,6 +8,7 @@ import { ParamsGetList } from '@common/database';
 
 import { UserBranchesCreateDto, UserBracnhesUpdateDto } from './dto';
 import { UserBranchesService } from './user-branches.service';
+import { Auth } from '@common/decorators';
 
 @ApiTags('User Banches')
 @ApiBearerAuth()
@@ -29,6 +30,7 @@ export class UserBranchesController {
   })
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Get('listGrid')
   async listGrid(@Query('params') params: string): Promise<TypeResponse> {
     const pagination: ParamsGetList = JSON.parse(params);
@@ -44,6 +46,7 @@ export class UserBranchesController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Get()
   async all(): Promise<TypeResponse> {
     const { data, meta } = await this.controllerService.paginate({});
@@ -57,6 +60,7 @@ export class UserBranchesController {
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' })
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Post()
   async create(@Body() body: UserBranchesCreateDto): Promise<TypeResponse> {
     const data = await this.controllerService.create(body);
@@ -72,6 +76,7 @@ export class UserBranchesController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Get(':id')
   async get(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const data = await this.controllerService.findOne({ where: { id } });
@@ -87,6 +92,7 @@ export class UserBranchesController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Patch(':id')
   async update(@Param('id', ParseUUIDPipe) id: string, @Body() body: UserBracnhesUpdateDto): Promise<TypeResponse> {
     const record: any = await this.controllerService.update(id, body);

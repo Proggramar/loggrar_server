@@ -125,6 +125,7 @@ export class DepartmentController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Delete(':id')
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const deleteResult: any = await this.controllerService.remove({ id });
@@ -139,6 +140,8 @@ export class DepartmentController {
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Conflict, duplicate entry' })
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
+  @HttpCode(HttpStatus.OK)
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Get('departments/:id')
   async departments(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const data = await this.controllerService.all({ where: { country: { id } } });
