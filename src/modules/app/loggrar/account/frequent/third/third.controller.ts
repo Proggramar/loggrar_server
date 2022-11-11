@@ -9,7 +9,6 @@ import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
 
 import { ThirdService } from './third.service';
 import { ThirdCreateDto, ThirdUpdateDto } from './dto';
-import { validate } from 'class-validator';
 
 @ApiTags('Third')
 @ApiBearerAuth()
