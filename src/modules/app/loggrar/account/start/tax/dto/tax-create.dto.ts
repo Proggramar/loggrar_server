@@ -40,22 +40,22 @@ export class TaxCreateDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  readonly id_sales: number;
+  readonly sales: number;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  readonly id_purchases: number;
+  readonly purchases: number;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  readonly id_refund_sales: number;
+  readonly refund_sales: number;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  readonly id_refund_purchases: number;
+  readonly refund_purchases: number;
 
   @ApiProperty()
   @IsNotEmpty()

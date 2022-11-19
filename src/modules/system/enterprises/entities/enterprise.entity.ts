@@ -1,10 +1,10 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Licences, Suscriptions } from '../enums';
 import { AbstractEntity } from '@common/database';
-import { DataBaseInformation, EnterpriseApplications } from '../types';
+import { CountrySetting } from '@modules/app/loggrar/setting/country/entities/country.entity';
 
 @Entity('system_enterprises')
 export class Enterprise extends AbstractEntity {
@@ -97,4 +97,17 @@ export class Enterprise extends AbstractEntity {
   @ApiProperty({ example: '', description: 'Enterprise database information' })
   @Column({ type: 'text' })
   applications: string;
+
+  @ApiProperty({ example: '', description: 'Populate chart of accounts' })
+  @ApiProperty()
+  @Column({ default: true })
+  accounts_populate: boolean;
+
+  @ManyToOne(() => CountrySetting, (entityCountry) => entityCountry.id, {
+    onDelete: 'NO ACTION',
+    onUpdate: 'CASCADE',
+    eager: true,
+  })
+  @JoinColumn([{ name: 'id_country', referencedColumnName: 'id' }])
+  country: CountrySetting;
 }

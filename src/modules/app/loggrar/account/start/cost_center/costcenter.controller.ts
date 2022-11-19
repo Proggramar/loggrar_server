@@ -31,7 +31,7 @@ export class CostcenterController {
   })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Get('listGrid')
   async listGrid(@Query('params') params: string): Promise<TypeResponse> {
     const pagination: ParamsGetList = JSON.parse(params);
@@ -47,7 +47,7 @@ export class CostcenterController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Get()
   async all(): Promise<TypeResponse> {
     const { data, meta } = await this.controllerService.paginate({});
@@ -61,9 +61,11 @@ export class CostcenterController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
-  @Get('/fathers')
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
+  @Get('/_fathers')
   async getFathers(): Promise<TypeResponse> {
+    console.log('aqui');
+
     const data = await this.controllerService.all({ where: { code: Like('%000') } });
     return toBackResponse('Records returned', { records: data });
   }
@@ -76,7 +78,7 @@ export class CostcenterController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.CREATED)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Post()
   async create(@Body() body: CostcenterCreateDto): Promise<TypeResponse> {
     const record: any = await this.controllerService.create(body);
@@ -92,7 +94,7 @@ export class CostcenterController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Get(':id')
   async get(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const data = await this.controllerService.findOne({ where: { id } });
@@ -108,7 +110,7 @@ export class CostcenterController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Patch(':id')
   async update(@Param('id', ParseUUIDPipe) id: string, @Body() body: CostcenterUpdateDto): Promise<TypeResponse> {
     const updateResult: any = await this.controllerService.update(id, body);
@@ -124,7 +126,7 @@ export class CostcenterController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Delete(':id')
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const deleteResult: any = await this.controllerService.remove({ id });

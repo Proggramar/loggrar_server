@@ -10,9 +10,21 @@ import { PermissionModule } from '@safety/permissions/permission.module';
 import { UserModule } from '@modules/safety/users/user.module';
 import { UserBranchesModule } from '@safety/users-branches/user-branches.module';
 import { BranchModule } from '@system/branches/branch.module';
+import { CountryModule } from '@loggrar/setting/country/country.module';
+import { AccountsModule } from '@loggrar/account/frequent/accounts/accounts.module';
 
 @Module({
-  imports: [EnterpriseModule, BranchModule, RolModule, MyModuleModule, PermissionModule, UserModule, UserBranchesModule],
+  imports: [
+    EnterpriseModule,
+    BranchModule,
+    RolModule,
+    MyModuleModule,
+    PermissionModule,
+    UserModule,
+    UserBranchesModule,
+    CountryModule,
+    AccountsModule,
+  ],
   controllers: [AppStartController],
   providers: [AppStartService],
   exports: [AppStartService],

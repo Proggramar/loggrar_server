@@ -9,11 +9,14 @@ import { UserService } from '@safety/users/user.service';
 import { BranchCreateDto } from '@system/branches/dto';
 import { BranchService } from '@system/branches/branch.service';
 import { MyModuleService } from '@safety/app-modules/module.service';
-import { RolService } from '@modules/safety/roles/rol.service';
+import { RolService } from '@safety/roles/rol.service';
 import { UserBranchesService } from '@safety/users-branches/user-branches.service';
 import { Branch } from '@system/branches/entities/branch.entity';
-import { Rol } from '@modules/safety/roles/entities/rol.entity';
+import { Rol } from '@safety/roles/entities/rol.entity';
 import { User } from '@safety/users/entities/user.entity';
+import { CountryCreateDto } from '@loggrar/setting/country/dto';
+import { CountryService } from '@loggrar/setting/country/country.service';
+import { AccountsService } from '@loggrar/account/frequent/accounts/accounts.service';
 
 @Injectable()
 export class AppStartService {
@@ -25,11 +28,24 @@ export class AppStartService {
     private readonly myAppModuleService: MyModuleService,
     private readonly rolesServices: RolService,
     private readonly userBranchesService: UserBranchesService,
+    private readonly countryService: CountryService,
+    private readonly accountService: AccountsService,
   ) {}
 
   async appStart() {
+    const countries: CountryCreateDto[] = await this.countryService.getCountriesData();
+    const countriesSaved = await this.countryService.saveCountriesFromArray(countries);
+
     const appTenant: EnterpriseCreateDto = await this.enterpriseService.getTenantData();
-    const tenantCreated: Enterprise = (await this.enterpriseService.createEnterprise(appTenant)) as Enterprise;
+    const tenantCreated: Enterprise = (await this.enterpriseService.createStartEnterprise(
+      appTenant,
+      countriesSaved,
+    )) as Enterprise;
+
+    const country = await this.countryService.getCountryByCodeFromArray(countriesSaved, appTenant.country);
+    const accountsData = await this.accountService.getAccountsData(country.alpha2);
+    await this.accountService.saveAccountsFromArray(accountsData);
+    await this.accountService.updateIdFather();
 
     const branchData: BranchCreateDto = await this.branchService.getBranchData(tenantCreated);
     const branchSaved: Branch = (await this.branchService.create(branchData)) as Branch;

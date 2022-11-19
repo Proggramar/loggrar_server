@@ -1,17 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, Not } from 'typeorm';
 
 import { DbAbstract } from '@common/database';
+import { YesNo } from '@common/enums/yes-no.enum';
+import { MyTools } from '@common/helpers/varius';
 
 import { Accounts } from './entities/accounts.entity';
-import { YesNo } from '@common/enums/yes-no.enum';
-import { TransactionsBodyFrequent } from '@modules/app/loggrar/account/frequent/transactions/entities/transactions-body.entity';
 import { Relation } from './enums/accounts.enum';
+import { TransactionsBodyFrequent } from '@loggrar/account/frequent/transactions/entities/transactions-body.entity';
 import { AccountTransactionsServiceSeating } from '@loggrar/account/frequent/transactions/transactions-body.service';
+import { AccountsCreateDto } from './dto';
 
 @Injectable()
 export class AccountsService extends DbAbstract {
+  private readonly myTools = new MyTools();
   constructor(
     @InjectRepository(Accounts)
     private readonly accountsRepository: Repository<Accounts>,
@@ -19,6 +22,47 @@ export class AccountsService extends DbAbstract {
     private readonly transactionsServiceSeating: AccountTransactionsServiceSeating,
   ) {
     super(accountsRepository);
+  }
+
+  async getAccountsData(country: string): Promise<any> {
+    const countriesAccountsFile: string = await this.myTools.getFileName(
+      `../../../seeds/data-to-seed/accounts-data-${country}.json`,
+    );
+    const accounstData: AccountsCreateDto[] = await this.myTools.getDataFromFile(countriesAccountsFile);
+    return accounstData;
+  }
+
+  async saveAccountsFromArray(accounts: AccountsCreateDto[]): Promise<void> {
+    for await (const record of accounts) {
+      await this.create(record);
+    }
+  }
+
+  async updateIdFather() {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let where: any = { code_father: Not('') };
+    let select = { id: true, code_father: true };
+    const accounts: any = await this.findAll({ select, where, throwError: false });
+    let update: any;
+
+    try {
+      for await (const record of accounts) {
+        where = { code: record.code_father };
+        const father: any = await this.findOne({ where, throwError: false });
+        where = { id: record.id };
+        update = { id_father: father.id };
+        await queryRunner.manager.update(Accounts, where, update);
+      }
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw new NotFoundException('Error to update fathers accounts');
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async getTypes(): Promise<object> {

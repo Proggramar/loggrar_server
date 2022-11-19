@@ -30,7 +30,7 @@ export class TemplateController {
   })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Get('listGrid')
   async listGrid(@Query('params') params: string): Promise<TypeResponse> {
     const pagination: ParamsGetList = JSON.parse(params);
@@ -46,7 +46,7 @@ export class TemplateController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Get()
   async all(): Promise<TypeResponse> {
     const { data, meta } = await this.controllerService.paginate({});
@@ -62,7 +62,7 @@ export class TemplateController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Get('getComboxData')
   async getComboxData(@Param('account') code: string): Promise<TypeResponse> {
     const data = await this.controllerService.getListsData();
@@ -77,7 +77,7 @@ export class TemplateController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.CREATED)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Post()
   async create(@Body() body: TemplateCreateDTO): Promise<TypeResponse> {
     const record: any = await this.controllerService.create(body);
@@ -93,7 +93,7 @@ export class TemplateController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Get(':id')
   async get(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     //   const data = await this.controllerService.findOne({ id }, ['templateBody']);
@@ -110,7 +110,7 @@ export class TemplateController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Patch(':id')
   async update(@Param('id', ParseUUIDPipe) id: string, @Body() body: TemplateUpdateDTO): Promise<TypeResponse> {
     const updateResult: any = await this.controllerService.update(id, body);
@@ -126,7 +126,7 @@ export class TemplateController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Delete(':id')
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const deleteResult: any = await this.controllerService.remove({ id });

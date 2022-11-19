@@ -1,5 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsDateString, IsEnum, IsJSON, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+  IsDate,
+  IsDateString,
+  IsEnum,
+  IsJSON,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+} from 'class-validator';
 import { Licences, Suscriptions } from '../enums';
 import { DataBaseInformation, EnterpriseApplications } from '../types';
 
@@ -98,4 +109,13 @@ export class EnterpriseCreateDto {
   @ApiProperty()
   @IsOptional()
   is_active?: boolean;
+
+  @ApiProperty()
+  @IsOptional()
+  accounts_populate: boolean;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  country: string;
 }

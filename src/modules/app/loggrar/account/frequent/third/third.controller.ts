@@ -75,7 +75,7 @@ export class ThirdController {
   @Auth({
     roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant, ValidRoles.operator],
   })
-  @Get('types')
+  @Get('_types')
   async getTypes() {
     const { responsability, types, regime, documents, cities } = await this.controllerService.getListsData();
     return toBackResponse('Records returned', { records: { responsability, types, documents, regime, cities } });

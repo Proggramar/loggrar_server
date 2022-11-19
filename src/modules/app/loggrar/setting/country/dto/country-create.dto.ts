@@ -13,4 +13,14 @@ export class CountryCreateDto {
   @IsString()
   @MaxLength(50)
   readonly name: string;
+
+  @ApiProperty()
+  @IsString()
+  @MaxLength(5)
+  readonly alpha2: string;
+
+  @ApiProperty()
+  @IsString()
+  @MaxLength(5)
+  readonly alpha3: string;
 }

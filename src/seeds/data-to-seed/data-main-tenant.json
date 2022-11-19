@@ -15,5 +15,7 @@
   "branchs_name": "Sucursal",
   "database_information": "{\"database\":\"loggrarDevDB\",\"host\":\"localhost\",\"port\":3306}",
   "applications":"",
-  "is_active": true
+  "is_active": true,
+  "accounts_populate":true,
+  "country":"169"
 }

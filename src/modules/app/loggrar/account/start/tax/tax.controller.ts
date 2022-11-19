@@ -13,7 +13,7 @@ import { Category, Types } from './enum/tax.enum';
 
 @ApiTags('Tax')
 @ApiBearerAuth()
-@Controller('loggrar/Account/Startr/Tax')
+@Controller('loggrar/Account/Start/Tax')
 export class TaxController {
   constructor(private controllerService: TaxService) {}
 
@@ -31,7 +31,7 @@ export class TaxController {
   })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Get('listGrid')
   async listGrid(@Query('params') params: string): Promise<TypeResponse> {
     const pagination: ParamsGetList = JSON.parse(params);
@@ -47,7 +47,7 @@ export class TaxController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Get()
   async all(): Promise<TypeResponse> {
     const { data, meta } = await this.controllerService.paginate({});
@@ -62,7 +62,7 @@ export class TaxController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.CREATED)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Post()
   async create(@Body() body: TaxCreateDto): Promise<TypeResponse> {
     const record: any = await this.controllerService.create(body);
@@ -78,7 +78,7 @@ export class TaxController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Get(':id')
   async get(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const data = await this.controllerService.findOne({ where: { id } });
@@ -94,8 +94,8 @@ export class TaxController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
-  @Get('types/:account')
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
+  @Get('_types/:account')
   async getTypes(@Param('account') code: string): Promise<TypeResponse> {
     const { tax_category, tax_types } = await this.controllerService.getTypes();
     const accounts = await this.controllerService.getAccounts(code);
@@ -111,7 +111,7 @@ export class TaxController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Patch(':id')
   async update(@Param('id', ParseUUIDPipe) id: string, @Body() body: TaxUpdateDto): Promise<TypeResponse> {
     const updateResult: any = await this.controllerService.update(id, body);
@@ -127,7 +127,7 @@ export class TaxController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
   @Delete(':id')
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const deleteResult: any = await this.controllerService.remove({ id });

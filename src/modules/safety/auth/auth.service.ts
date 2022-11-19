@@ -113,6 +113,7 @@ export class AuthService {
     }
     const userData = await this.myTools.mergeData(userDB, {
       entrerprise_name: enterprise.name,
+      account_params: enterprise.params_account,
       branchesRoles,
       tokens,
       expireSoon: toExpire,

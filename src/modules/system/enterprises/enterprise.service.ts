@@ -12,6 +12,7 @@ import { EnterpriseCreateDto, EnterpriseUpdateDto } from './dto';
 import { MyModule } from '@modules/safety/app-modules/entities/my-module.entity';
 import { EnterpriseApplications } from './types';
 import { MySecurity } from '@common/helpers/security';
+import { CountrySetting } from '@modules/app/loggrar/setting/country/entities/country.entity';
 
 @Injectable()
 export class EnterpriseService extends DbAbstract {
@@ -23,6 +24,14 @@ export class EnterpriseService extends DbAbstract {
     private readonly jwtService: JwtService,
   ) {
     super(enterpriseRepository);
+  }
+
+  async createStartEnterprise(enterpriseData: EnterpriseCreateDto, countriesData: any[]): Promise<Enterprise> {
+    const country: any = countriesData.filter((row) => row.code == enterpriseData.country);
+    const enterpriseToCreate: EnterpriseCreateDto = (await this.myTools.mergeData(enterpriseData, {
+      country: country[0].id,
+    })) as EnterpriseCreateDto;
+    return this.createEnterprise(enterpriseToCreate);
   }
 
   async createEnterprise(enterpriseData: EnterpriseCreateDto): Promise<Enterprise> {
@@ -39,7 +48,6 @@ export class EnterpriseService extends DbAbstract {
         },
       },
     });
-    //license_plan_suscription_token
     const otp = await this.mySecurity.otp({ text: token, secret: process.env.BACK_ALGORITHM_SECRET, size: 8 });
     const { ...dataToSave } = {
       ...enterpriseData,
