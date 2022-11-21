@@ -2,7 +2,7 @@ import { Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeor
 import { ApiProperty } from '@nestjs/swagger';
 
 import { MyModule } from '@safety/app-modules/entities/my-module.entity';
-import { Rol } from '@modules/safety/roles/entities/rol.entity';
+import { Rol } from '@safety/roles/entities/rol.entity';
 import { v4 as UUID4 } from 'uuid';
 
 @Entity('safety_permissions')
