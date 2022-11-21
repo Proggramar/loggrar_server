@@ -5,17 +5,17 @@ import { opendir } from 'fs/promises';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { DataSource } from 'typeorm';
+import { DataSource, Driver, QueryRunner } from 'typeorm';
 
 import { JwtPayLoad, PinsGenerated } from '@common/interfaces';
 import { MySecurity } from '../security/my-security';
 import { FileSeeder } from '@seeds/interfaces/seeders.interface';
 import { MyCrypt } from '../security';
+import { MyModule } from '@modules/safety/app-modules/entities/my-module.entity';
 
 export class MyTools {
   private readonly mySecurity = new MySecurity();
   private readonly myCripto = new MyCrypt({});
-  // private readonly jwtService: JwtService;
   private readonly dataSource: DataSource;
 
   // TODO refactorizar
@@ -30,20 +30,22 @@ export class MyTools {
     return fileNameNormalized;
   }
 
-  async listFiles(directorySearch: string, pattern: string, files: FileSeeder[]): Promise<FileSeeder[]> {
+  async listFiles(directorySearch: string, pattern: string, excludePattern: string, files: FileSeeder[]): Promise<FileSeeder[]> {
     try {
       const directopryOpened = await opendir(directorySearch + '/');
       for await (const fileInDirectory of directopryOpened) {
         if (fileInDirectory.isDirectory()) {
           const newDir = directorySearch + '/' + fileInDirectory.name;
-          await this.listFiles(newDir, pattern, files);
+          await this.listFiles(newDir, pattern, excludePattern, files);
         } else {
-          if (fileInDirectory.name.includes(pattern)) {
-            files.push({
-              file: fileInDirectory.name,
-              directory: directorySearch,
-              className: '',
-            });
+          if (!fileInDirectory.name.includes(excludePattern)) {
+            if (fileInDirectory.name.includes(pattern)) {
+              files.push({
+                file: fileInDirectory.name,
+                directory: directorySearch,
+                className: '',
+              });
+            }
           }
         }
       }
@@ -55,13 +57,18 @@ export class MyTools {
 
   // TODO: revisar posicion del nombre de la clase (ya no esta 'extends')
   async readClass(files: FileSeeder[]) {
+    const findClass = '= class '; //'export class '
     files.map(async (file) => {
       let fileContent = await this.readFile(file.directory + '/' + file.file);
-      let textClassPosition = fileContent.indexOf('export class ');
+      let textClassPosition = fileContent.indexOf(findClass);
+
       if (textClassPosition > -1) {
-        textClassPosition += 13;
+        textClassPosition += findClass.length;
         let textExtendsPosition = fileContent.indexOf('extends', textClassPosition);
-        file.className = String(fileContent.substring(textClassPosition, textExtendsPosition)).trim();
+
+        if (textExtendsPosition > -1) {
+          file.className = String(fileContent.substring(textClassPosition, textExtendsPosition)).trim();
+        }
       }
     });
     return;
@@ -148,8 +155,8 @@ export class MyTools {
   }
 
   async mathEntity(fileName: string, filesClass: FileSeeder[]): Promise<string> {
-    const classSeek = fileName.split('.')[0];
-    const result = filesClass.filter((file) => file.file.split('.')[0] == classSeek);
+    const classSeek = fileName.split('.')[0].replace('-data', '').replaceAll('-', '').toLowerCase();
+    const result = filesClass.filter((file) => file.file.split('.')[0].replaceAll('-', '').toLowerCase() == classSeek);
     try {
       return result[0].className;
     } catch {
@@ -166,8 +173,9 @@ export class MyTools {
   }
 
   async retrieveFields(fileName: FileSeeder): Promise<string[]> {
+    const dataFile = await this.readJson(fileName.directory + '/' + fileName.file);
     let fields = [];
-    let dataFile = await this.readJson(fileName.directory + '/' + fileName.file);
+
     if (dataFile && dataFile.length > 0) {
       const firstRecod = dataFile[0];
       fields = Object.keys(firstRecod);
@@ -176,14 +184,31 @@ export class MyTools {
     return fields;
   }
 
-  async getData(entity, fields: string[], where: any = null): Promise<any[]> {
+  async getData(entity: string, fields: string[], where: any = null): Promise<any[]> {
     let data = [];
-    try {
-      let query = await this.dataSource.getRepository(entity).createQueryBuilder().select(fields);
 
-      if (where) {
-        query = query.where(`${where.field} ${where.operator} '${where.data}'`);
-      }
+    try {
+      let query = this.dataSource.getRepository(entity).createQueryBuilder().select();
+      data = await query.getRawMany();
+
+      // if (where) {
+      //   query = query.where(`${where.field} ${where.operator} '${where.data}'`);
+      // }
+    } catch (e) {
+      console.error(e);
+    } finally {
+    }
+    return data;
+  }
+  async getDatax(entity, fields: string[], where: any = null): Promise<any[]> {
+    let data = [];
+
+    try {
+      let query = this.dataSource.getRepository(entity).createQueryBuilder().select(fields);
+
+      // if (where) {
+      //   query = query.where(`${where.field} ${where.operator} '${where.data}'`);
+      // }
       data = await query.getRawMany();
     } catch (e) {
       console.error(e);
