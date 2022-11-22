@@ -1,2 +1,2 @@
 export * from './reason-create.dto';
-export * from './reason.dto';
+export * from './reason-update.dto';

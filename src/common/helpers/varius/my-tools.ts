@@ -9,16 +9,13 @@ import { DataSource, Driver, QueryRunner } from 'typeorm';
 
 import { JwtPayLoad, PinsGenerated } from '@common/interfaces';
 import { MySecurity } from '../security/my-security';
-import { FileSeeder } from '@seeds/interfaces/seeders.interface';
+import { IfileSeeder } from '@common/interfaces/seeders.interface';
 import { MyCrypt } from '../security';
-import { MyModule } from '@modules/safety/app-modules/entities/my-module.entity';
 
 export class MyTools {
   private readonly mySecurity = new MySecurity();
   private readonly myCripto = new MyCrypt({});
   private readonly dataSource: DataSource;
-
-  // TODO refactorizar
 
   async normalizeFile(subdirectory: string, fileName: string, extension: string) {
     let fileNameNormalized: string;
@@ -30,7 +27,12 @@ export class MyTools {
     return fileNameNormalized;
   }
 
-  async listFiles(directorySearch: string, pattern: string, excludePattern: string, files: FileSeeder[]): Promise<FileSeeder[]> {
+  async listFiles(
+    directorySearch: string,
+    pattern: string,
+    excludePattern: string,
+    files: IfileSeeder[],
+  ): Promise<IfileSeeder[]> {
     try {
       const directopryOpened = await opendir(directorySearch + '/');
       for await (const fileInDirectory of directopryOpened) {
@@ -56,7 +58,7 @@ export class MyTools {
   }
 
   // TODO: revisar posicion del nombre de la clase (ya no esta 'extends')
-  async readClass(files: FileSeeder[]) {
+  async readClass(files: IfileSeeder[]) {
     const findClass = '= class '; //'export class '
     files.map(async (file) => {
       let fileContent = await this.readFile(file.directory + '/' + file.file);
@@ -154,7 +156,7 @@ export class MyTools {
     return numbers.reverse();
   }
 
-  async mathEntity(fileName: string, filesClass: FileSeeder[]): Promise<string> {
+  async mathEntity(fileName: string, filesClass: IfileSeeder[]): Promise<string> {
     const classSeek = fileName.split('.')[0].replace('-data', '').replaceAll('-', '').toLowerCase();
     const result = filesClass.filter((file) => file.file.split('.')[0].replaceAll('-', '').toLowerCase() == classSeek);
     try {
@@ -172,7 +174,7 @@ export class MyTools {
     }
   }
 
-  async retrieveFields(fileName: FileSeeder): Promise<string[]> {
+  async retrieveFields(fileName: IfileSeeder): Promise<string[]> {
     const dataFile = await this.readJson(fileName.directory + '/' + fileName.file);
     let fields = [];
 

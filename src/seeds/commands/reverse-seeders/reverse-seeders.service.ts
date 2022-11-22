@@ -10,11 +10,13 @@ export class ReverseSeedersService {
   constructor(private readonly myAppModuleService: MyModuleService) {}
 
   async reverseSeeders() {
-    const filesDataToReverse: string[] = ['my-module'];
+    const filesDataToReverse: string[] = ['my-module', 'civil-state-data&&&'];
     let directory = await this.myTools.normalizeFile('../', 'seeds/data-to-seed', '');
 
     const filesToReversed: IfileSeeder[] = filesDataToReverse.map((file) => {
-      return { directory, file: file + '-data.json', className: '' };
+      const country = file.includes('&&&') ? '-CO' : '';
+      let fileSeeder = { directory, file: file.replace('&&&', '') + `-data${country}.json`, className: '' };
+      return fileSeeder;
     });
 
     directory = await this.myTools.normalizeFile('../', 'modules', '');

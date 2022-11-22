@@ -18,7 +18,7 @@ export class MyModuleService extends DbAbstract {
   }
 
   async getModulesData(): Promise<any> {
-    const mainTentanFile: string = await this.myTools.getFileName('../../../seeds/data-to-seed/modules-data.json');
+    const mainTentanFile: string = await this.myTools.getFileName('../../../seeds/data-to-seed/my-module-data.json');
     const modulesData: MyModuleCreateDto[] = await this.myTools.getDataFromFile(mainTentanFile);
     return modulesData;
   }

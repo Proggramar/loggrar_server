@@ -1,0 +1,13 @@
+[
+{"code":"COP","name":"Peso Colombiano","sign":"$","tribute_code":"COP","decimals":0},
+{"code":"CLP","name":"Peso Chileno","sign":"$","tribute_code":"CLP","decimals":0},
+{"code":"ARS","name":"Peso Aregentino","sign":"$","tribute_code":"ARS","decimals":0},
+{"code":"PEN","name":"Sol","sign":"$","tribute_code":"PEN","decimals":0},
+{"code":"USD","name":"Dólar estadounidense","sign":"$","tribute_code":"USD","decimals":2},
+{"code":"CAD","name":"Dólar canadiense","sign":"$","tribute_code":"CAD","decimals":2},
+{"code":"EUR","name":"Euro","sign":"€","tribute_code":"EUR","decimals":0},
+{"code":"BOB","name":"Boliviano","sign":"Bs","tribute_code":"BOB","decimals":0},
+{"code":"VES","name":"Bolívar soberano","sign":"Bs","tribute_code":"VES","decimals":0},
+{"code":"MXN","name":"Peso mexicano","sign":"$","tribute_code":"MXN","decimals":0},
+{"code":"UYU","name":"Peso uruguayo","sign":"$","tribute_code":"UYU","decimals":0}
+]

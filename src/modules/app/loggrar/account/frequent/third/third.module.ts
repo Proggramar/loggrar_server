@@ -7,15 +7,21 @@ import { PermissionModule } from '@safety/permissions/permission.module';
 import { Third } from './entities/third.entity';
 import { ThirdService } from './third.service';
 import { ThirdController } from './third.controller';
-import { DocumentService } from '@loggrar/setting/documents/document.service';
-import { MunicipalityService } from '@loggrar/setting/municipality/municipality.service';
+import { DocumentModule } from '@loggrar/setting/documents/document.module';
+import { MunicipalityModule } from '@loggrar/setting/municipality/municipality.module';
 import { DocumentSetting } from '@loggrar/setting/documents/entities/document.entity';
 import { MunicipalitySetting } from '@loggrar/setting/municipality/entities/municipality.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Third, DocumentSetting, MunicipalitySetting]), UserModule, PermissionModule],
+  imports: [
+    TypeOrmModule.forFeature([Third, DocumentSetting, MunicipalitySetting]),
+    UserModule,
+    PermissionModule,
+    DocumentModule,
+    MunicipalityModule,
+  ],
   controllers: [ThirdController],
-  providers: [ThirdService, DocumentService, MunicipalityService],
-  exports: [ThirdService, DocumentService, MunicipalityService],
+  providers: [ThirdService],
+  exports: [ThirdService],
 })
 export class ThirdModule {}

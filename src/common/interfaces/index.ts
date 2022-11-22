@@ -4,4 +4,4 @@ export * from './my-crypto.interface';
 export * from './my-security.interface';
 export * from './paginate-result.interface';
 export * from './security-pins.interface';
-export * from './seeers';
+export * from './seeders.interface';

@@ -1,19 +1,7 @@
+import { Column, Entity } from 'typeorm';
+
 import { AbstractEntity } from '@common/database';
 import { YesNo } from '@common/enums/yes-no.enum';
-import { Enterprise } from '@modules/system/enterprises/entities/enterprise.entity';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
 
 @Entity('payroll_reason')
 export class ReasonStart extends AbstractEntity {
@@ -29,11 +17,4 @@ export class ReasonStart extends AbstractEntity {
     default: YesNo.No,
   })
   compensation: YesNo;
-
-  @ManyToOne(() => Enterprise, (entityEnterprise) => entityEnterprise.id, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'id_enterprise', referencedColumnName: 'id' }])
-  enterprise: Enterprise;
 }

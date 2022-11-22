@@ -12,6 +12,14 @@ import { UserBranchesModule } from '@safety/users-branches/user-branches.module'
 import { BranchModule } from '@system/branches/branch.module';
 import { CountryModule } from '@loggrar/setting/country/country.module';
 import { AccountsModule } from '@loggrar/account/frequent/accounts/accounts.module';
+import { CivilModule } from '@loggrar/setting/civilState/civilstate.module';
+import { CurrencyModule } from '@modules/app/loggrar/setting/currency/currency.module';
+import { DepartmentModule } from '@modules/app/loggrar/setting/departments/department.module';
+import { DocumentModule } from '@loggrar/setting/documents/document.module';
+import { LanguageModule } from '@loggrar/setting/languages/language.module';
+import { UnitModule } from '@loggrar/setting/units/unit.module';
+import { PayRollReasonModule } from '@loggrar/payroll/Start/reasonDismissal/reason.module';
+import { MunicipalityModule } from '@loggrar/setting/municipality/municipality.module';
 
 @Module({
   imports: [
@@ -24,6 +32,14 @@ import { AccountsModule } from '@loggrar/account/frequent/accounts/accounts.modu
     UserBranchesModule,
     CountryModule,
     AccountsModule,
+    CivilModule,
+    CurrencyModule,
+    DepartmentModule,
+    MunicipalityModule,
+    DocumentModule,
+    LanguageModule,
+    UnitModule,
+    PayRollReasonModule,
   ],
   controllers: [AppStartController],
   providers: [AppStartService],
