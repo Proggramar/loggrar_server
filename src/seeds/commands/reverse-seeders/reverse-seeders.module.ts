@@ -14,6 +14,7 @@ import { LanguageModule } from '@loggrar/setting/languages/language.module';
 import { MunicipalityModule } from '@loggrar/setting/municipality/municipality.module';
 import { PayRollReasonModule } from '@loggrar/payroll/Start/reasonDismissal/reason.module';
 import { UnitModule } from '@loggrar/setting/units/unit.module';
+import { SourceModule } from '@loggrar/account/start/source/source.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UnitModule } from '@loggrar/setting/units/unit.module';
     MunicipalityModule,
     PayRollReasonModule,
     UnitModule,
+    SourceModule,
   ],
   controllers: [ReverseSeedersController],
   providers: [ReverseSeedersService],

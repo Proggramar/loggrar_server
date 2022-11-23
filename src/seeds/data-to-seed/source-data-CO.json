@@ -1,0 +1,9 @@
+[
+{"code":"CC","name":"Comprobante de contabilidad","prefix":"CC-","auto":"No","num_size":10,"numeration":0,"printer":"No","reference_document":"No"},
+{"code":"CE","name":"Comprobante de Egreso","prefix":"CE-","auto":"Si","num_size":10,"numeration":0,"printer":"Si","reference_document":"No"},
+{"code":"FV","name":"Factura de venta","prefix":"FV-","auto":"No","num_size":100,"numeration":0,"printer":"No","reference_document":"No"},
+{"code":"OS","name":"Orden de servicio","prefix":"OS-","auto":"Si","num_size":9,"numeration":0,"printer":"No","reference_document":"Si"},
+{"code":"RC","name":"Recibo de caja","prefix":"RC-","auto":"Si","num_size":9,"numeration":0,"printer":"Si","reference_document":"No"},
+{"code":"RCM","name":"Recibo caja menor","prefix":"RCM-","auto":"Si","num_size":9,"numeration":0,"printer":"Si","reference_document":"Si"},
+{"code":"RM","name":"Remision","prefix":"RM-","auto":"Si","num_size":10,"numeration":0,"printer":"No","reference_document":"No"}
+]

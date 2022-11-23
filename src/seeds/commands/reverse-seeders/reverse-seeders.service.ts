@@ -11,8 +11,9 @@ import { DocumentService } from '@loggrar/setting/documents/document.service';
 import { LanguageService } from '@loggrar/setting/languages/Language.service';
 import { MunicipalityService } from '@loggrar/setting/municipality/municipality.service';
 import { PayRollReasonService } from '@loggrar/payroll/Start/reasonDismissal/reason.service';
-import { UnitService } from '@modules/app/loggrar/setting/units/unit.service';
-import { AccountsService } from '@modules/app/loggrar/account/frequent/accounts/accounts.service';
+import { UnitService } from '@loggrar/setting/units/unit.service';
+import { AccountsService } from '@loggrar/account/frequent/accounts/accounts.service';
+import { SourceService } from '@loggrar/account/start/source/source.service';
 
 @Injectable()
 export class ReverseSeedersService {
@@ -29,6 +30,7 @@ export class ReverseSeedersService {
     private readonly munipalityService: MunicipalityService,
     private readonly reasonService: PayRollReasonService,
     private readonly unitService: UnitService,
+    private readonly sourceService: SourceService,
   ) {}
 
   async reverseSeeders() {
@@ -44,6 +46,7 @@ export class ReverseSeedersService {
       'municipality&&&',
       'reason&&&',
       'unit',
+      'source&&&',
     ];
     let directory = await this.myTools.normalizeFile('../', 'seeds/data-to-seed', '');
 
@@ -96,6 +99,7 @@ export class ReverseSeedersService {
     if (entity == 'MunicipalitySetting') return this.munipalityService.all({ select, order: { code: true } });
     if (entity == 'ReasonStart') return this.reasonService.all({ select, order: { code: true } });
     if (entity == 'UnitSetting') return this.unitService.all({ select, order: { code: true } });
+    if (entity == 'SourceStart') return this.sourceService.all({ select, order: { code: true } });
   }
 
   async formSelect(fields: string[]): Promise<object> {
