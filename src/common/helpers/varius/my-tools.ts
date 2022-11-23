@@ -162,7 +162,7 @@ export class MyTools {
     try {
       return result[0].className;
     } catch {
-      return '';
+      return undefined;
     }
   }
 

@@ -1,14 +1,1 @@
-[
-{"name":"Registro civil","type_document":"Natural","dian_code":"11"},
-{"name":"Tarjeta de identidad","type_document":"Natural","dian_code":"12"},
-{"name":"Cédula de ciudadanía","type_document":"Natural","dian_code":"13"},
-{"name":"Tarjeta de extranjería","type_document":"Natural","dian_code":"21"},
-{"name":"Cédula de extranjería","type_document":"Natural","dian_code":"22"},
-{"name":"Pasaporte","type_document":"Natural","dian_code":"41"},
-{"name":"Nit","type_document":"Juridico","dian_code":"31"},
-{"name":"Documento de identificación extranjero (N)","type_document":"Natural","dian_code":"42"},
-{"name":"Identificación de extranjeros diferente al NIT","type_document":"Natural","dian_code":"33"},
-{"name":"Sin identificación del exterior","type_document":"Natural","dian_code":"43"},
-{"name":"Documento de Identificación extranjero (J)","type_document":"Juridico","dian_code":"44"},
-{"name":"Carné Diplomático","type_document":"Natural","dian_code":"46"}
-]
+[{"name":"Pasaporte","type_document":"Natural","dian_code":"41"},{"name":"Carné Diplomático","type_document":"Natural","dian_code":"46"},{"name":"Registro civil","type_document":"Natural","dian_code":"11"},{"name":"Documento de Identificación extranjero (J)","type_document":"Juridico","dian_code":"44"},{"name":"Tarjeta de identidad","type_document":"Natural","dian_code":"12"},{"name":"Documento de identificación extranjero (N)","type_document":"Natural","dian_code":"42"},{"name":"Nit","type_document":"Juridico","dian_code":"31"},{"name":"Cédula de ciudadanía","type_document":"Natural","dian_code":"13"},{"name":"Tarjeta de extranjería","type_document":"Natural","dian_code":"21"},{"name":"Sin identificación del exterior","type_document":"Natural","dian_code":"43"},{"name":"Cédula de extranjería","type_document":"Natural","dian_code":"22"},{"name":"Identificación de extranjeros diferente al NIT","type_document":"Natural","dian_code":"33"}]

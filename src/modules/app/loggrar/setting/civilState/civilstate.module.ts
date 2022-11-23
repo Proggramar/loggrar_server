@@ -6,7 +6,7 @@ import { PermissionModule } from '@modules/safety/permissions/permission.module'
 
 import { CivilService } from './civilstate.service';
 import { CivilController } from './civilstate.controller';
-import { CivilSetting } from './entities/civilstate.entity';
+import { CivilSetting } from './entities/civil-state.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CivilSetting]), UserModule, PermissionModule],

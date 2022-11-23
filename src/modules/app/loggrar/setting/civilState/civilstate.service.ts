@@ -6,7 +6,7 @@ import { DbAbstract } from '@common/database';
 import { MyTools } from '@common/helpers/varius';
 
 import { CivilCreateDto } from './dto';
-import { CivilSetting } from './entities/civilstate.entity';
+import { CivilSetting } from './entities/civil-state.entity';
 
 @Injectable()
 export class CivilService extends DbAbstract {

@@ -14,7 +14,7 @@ export class MunicipalitySetting extends AbstractEntity {
   @ManyToOne(() => DepartmentSetting, (DepartmentSetting) => DepartmentSetting.id, {
     onDelete: 'NO ACTION',
     onUpdate: 'CASCADE',
-    eager: true,
+    // eager: true,
   })
   @JoinColumn([{ name: 'id_department', referencedColumnName: 'id' }])
   department: DepartmentSetting;
