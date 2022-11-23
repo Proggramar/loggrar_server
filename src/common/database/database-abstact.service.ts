@@ -108,6 +108,7 @@ export abstract class DbAbstract {
 
   async remove(condition: object): Promise<object> {
     const recordSaved = await this.findOne({ where: condition });
+    if (!recordSaved) throw new NotFoundException(`Record ${condition} does not found for remove`);
 
     try {
       const deleteResult = await this.repository.remove(recordSaved);
