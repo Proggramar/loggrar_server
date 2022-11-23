@@ -49,7 +49,7 @@ export class CountryController {
   @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Get()
   async all(): Promise<TypeResponse> {
-    const { data, meta } = await this.controllerService.paginate({});
+    const { data, meta } = await this.controllerService.paginate({ order: { name: true } });
     return toBackResponse('Records returned', { records: data, meta });
   }
 
