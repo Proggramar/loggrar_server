@@ -66,7 +66,7 @@ export class CostcenterController {
   async getFathers(): Promise<TypeResponse> {
     console.log('aqui');
 
-    const data = await this.controllerService.all({ where: { code: Like('%000') } });
+    const data = await this.controllerService.all({ where: { code: Like('%-00') } });
     return toBackResponse('Records returned', { records: data });
   }
 
