@@ -107,11 +107,11 @@ export abstract class DbAbstract {
   }
 
   async remove(condition: object): Promise<object> {
-    const recordSaved = await this.findOne(condition);
+    const recordSaved = await this.findOne({ where: condition });
 
     try {
       const deleteResult = await this.repository.remove(recordSaved);
-      if (deleteResult.affected && deleteResult.affected > 0) return deleteResult;
+      if (deleteResult) return deleteResult;
       throw new HttpException('Error deleting data', HttpStatus.BAD_REQUEST);
     } catch (error) {
       this.handleDBExceptions(error);
