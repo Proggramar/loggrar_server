@@ -24,8 +24,8 @@ export class AccountsCreateDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
-  readonly id_father?: number;
+  @IsString()
+  readonly id_father?: string;
 
   @ApiProperty()
   @IsNotEmpty()

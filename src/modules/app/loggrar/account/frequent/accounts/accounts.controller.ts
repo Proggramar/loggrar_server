@@ -77,10 +77,10 @@ export class AccountsController {
   @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
   @Version('1')
   @HttpCode(HttpStatus.OK)
-  @Get('types')
+  @Get('_types')
   async getTypes() {
     const account_relations: object = await this.controllerService.getTypes();
-    return toBackResponse('Records returned', { records: { account_relations } });
+    return toBackResponse('Records returned', { records: account_relations });
   }
 
   @ApiOperation({ summary: 'Create a account', description: 'Create a new account' })
@@ -124,7 +124,7 @@ export class AccountsController {
   @Version('1')
   @HttpCode(HttpStatus.OK)
   @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
-  @Get('checkAccount/:code/:code_father')
+  @Get('_checkAccount/:code/:code_father')
   async checkAccount(@Param('code') code: string, @Param('code_father') code_father: string): Promise<TypeResponse> {
     const { account, father } = await this.controllerService.checkAccount(code, code_father);
     return toBackResponse('Record getting successfully', { records: { account, father } });
@@ -140,7 +140,7 @@ export class AccountsController {
   @Version('1')
   @HttpCode(HttpStatus.OK)
   @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
-  @Get('canDelete/:id')
+  @Get('_canDeleteAccount/:id')
   async canDelete(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const { canDelete, hasTransactions, childrens, data, father } = await this.controllerService.canDeleteAccount(id);
     return toBackResponse('Record getting successfully', { records: { canDelete, hasTransactions, childrens, data, father } });
