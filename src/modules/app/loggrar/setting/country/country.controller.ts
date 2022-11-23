@@ -95,11 +95,7 @@ export class CountryController {
   @HttpCode(HttpStatus.OK)
   @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Patch(':id')
-  async update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: CountryUpdateDto,
-    @GetUser('data') loginData: any,
-  ): Promise<TypeResponse> {
+  async update(@Param('id', ParseUUIDPipe) id: string, @Body() body: CountryUpdateDto): Promise<TypeResponse> {
     const updateResult: any = await this.controllerService.update(id, body);
     return toBackResponse('Record updated successfully');
   }
