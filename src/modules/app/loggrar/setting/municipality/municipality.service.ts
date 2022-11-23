@@ -30,7 +30,8 @@ export class MunicipalityService extends DbAbstract {
 
   async saveMunicipalitiesFromArray(municipalities: MunicipalityCreateDto[], country: any) {
     for await (const record of municipalities) {
-      const where = { country: { id: country.id }, code: record.code.substring(0, 2) };
+      const code = record.code.split('-')[1];
+      const where = { country: { id: country.id }, code };
       const department: any = await this.departmentService.findOne({ where: where, throwError: false });
       const municipalityToSave = await this.myTools.mergeData(record, { department: department.id });
       await this.create(municipalityToSave);

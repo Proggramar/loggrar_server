@@ -120,7 +120,7 @@ export abstract class DbAbstract {
 
   async getDataGrid(queryParams: any) {
     const { sortBy, descending, page, dataTableColumns, filterFromEndPoint = '', relations = [] } = queryParams;
-    const rowsPerPage = queryParams.rowsPerPage == 'Todos' ? 0 : queryParams.rowsPerPage;
+    let rowsPerPage = queryParams.rowsPerPage == 'Todos' ? 0 : queryParams.rowsPerPage;
     let offset: number = (page - 1) * rowsPerPage;
     let toFilter: string = '';
     let filterPrev: string = '';
@@ -130,7 +130,6 @@ export abstract class DbAbstract {
     let orderBy: string = '';
     let aliasMain: string = '';
     let toJoins: string = '';
-    // const dataFilters: any[] = [];
 
     const tableName = this.repository.metadata.givenTableName;
     if (relations.length > 0) {
@@ -179,8 +178,14 @@ export abstract class DbAbstract {
     }
     if (orderBy !== '') orderBy = 'ORDER BY ' + orderBy;
     if (toFilter !== '') toFilter = 'where ' + filter;
+    let paginate: string = '';
+    if (rowsPerPage > 0) {
+      paginate = `LIMIT ${rowsPerPage}`;
+      if (offset > 0) paginate += ` OFFSET ${offset}`;
+    }
 
-    const sqlToExecute = `select ${fieldsToSelect} from ${tableName} ${toJoins}${toFilter} ${orderBy} LIMIT ${rowsPerPage} OFFSET ${offset}`;
+    const sqlToExecute = `select ${fieldsToSelect} from ${tableName} ${toJoins}${toFilter} ${orderBy} ${paginate} `;
+    // const sqlToExecute = `select ${fieldsToSelect} from ${tableName} ${toJoins}${toFilter} ${orderBy} LIMIT ${paginate} OFFSET ${offset}`;
 
     try {
       const data = await this.repository.query(sqlToExecute);

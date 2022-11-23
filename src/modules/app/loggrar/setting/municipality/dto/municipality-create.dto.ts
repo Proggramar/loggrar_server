@@ -5,7 +5,7 @@ export class MunicipalityCreateDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  @MaxLength(17)
+  @MaxLength(12)
   readonly code: string;
 
   @ApiProperty()

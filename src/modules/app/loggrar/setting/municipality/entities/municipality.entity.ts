@@ -5,7 +5,7 @@ import { AbstractEntity } from '@common/database';
 
 @Entity('setting_municipalities')
 export class MunicipalitySetting extends AbstractEntity {
-  @Column('varchar', { unique: true, length: 17, nullable: false })
+  @Column('varchar', { unique: true, length: 12, nullable: false })
   code: string;
 
   @Column('varchar', { length: 50, nullable: false })

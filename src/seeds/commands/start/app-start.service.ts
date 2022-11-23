@@ -64,6 +64,14 @@ export class AppStartService {
 
     const country = await this.countryService.getCountryByCodeFromArray(countriesSaved, appTenant.country);
 
+    Logger.debug('populate departments... ');
+    const dempartments = await this.departmentService.getDepartmentsData(country.alpha2);
+    await this.departmentService.saveDepartmentsFromArray(dempartments, country);
+
+    Logger.debug('populate municipalities... ');
+    const municipalities = await this.municipalityService.getMunicipalitiesData(country.alpha2);
+    await this.municipalityService.saveMunicipalitiesFromArray(municipalities, country);
+
     Logger.debug('populate accounts... ');
     const accountsData = await this.accountService.getAccountsData(country.alpha2);
     await this.accountService.saveAccountsFromArray(accountsData);
@@ -100,14 +108,6 @@ export class AppStartService {
     Logger.debug('populate currencies... ');
     const currencies = await this.currencyService.getCurrencyData();
     await this.currencyService.saveCurrencyFromArray(currencies);
-
-    Logger.debug('populate departments... ');
-    const dempartments = await this.departmentService.getDepartmentsData(country.alpha2);
-    await this.departmentService.saveDepartmentsFromArray(dempartments, country);
-
-    Logger.debug('populate municipalities... ');
-    const municipalities = await this.municipalityService.getMunicipalitiesData(country.alpha2);
-    await this.municipalityService.saveMunicipalitiesFromArray(municipalities, country);
 
     Logger.debug('populate documents... ');
     const documents = await this.documentService.getDocumentsData(country.alpha2);
