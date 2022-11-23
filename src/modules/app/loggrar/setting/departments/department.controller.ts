@@ -142,9 +142,9 @@ export class DepartmentController {
   @Version('1')
   @HttpCode(HttpStatus.OK)
   @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
-  @Get('departments/:id')
+  @Get('_departments/:id')
   async departments(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
-    const data = await this.controllerService.all({ where: { country: { id } } });
+    const data = await this.controllerService.all({ where: { country: { id } }, order: { name: true } });
     return toBackResponse('Records returned', { records: data });
   }
 }
