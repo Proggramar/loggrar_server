@@ -130,6 +130,14 @@ export class AccountsService extends DbAbstract {
   }
 
   async createAndMove(data: any): Promise<any> {
+    this.saveAndMove(data);
+  }
+
+  async updateAndMove(id: string, data: any): Promise<any> {
+    const recordSaved = await this.findOne({ where: { id } });
+    this.saveAndMove({ ...recordSaved, ...data });
+  }
+  async saveAndMove(data: any): Promise<any> {
     const queryRunner = this.dataSource.createQueryRunner();
 
     const moveTransactions = data.moveTransactions;
@@ -150,7 +158,6 @@ export class AccountsService extends DbAbstract {
       if (moveTransactions) {
         // data to update transactions
         const idTarget = data.id;
-        // const field = { id_account: idTarget };
         const account = new Accounts();
         account.id = idTarget;
         where = { id_account: idSource };

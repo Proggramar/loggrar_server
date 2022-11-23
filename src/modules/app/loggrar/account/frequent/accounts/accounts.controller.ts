@@ -23,7 +23,7 @@ import { ParseUUIDPipe } from '@common/pipes/parse-uuid.pipe';
 
 import { AccountsService } from './accounts.service';
 // import { AccountTransactionsServiceSeating } from '../transactions/transactions-body.service';
-import { AccountsCreateDto } from './dto';
+import { AccountsCreateDto, AccountsUpdateDto } from './dto';
 
 @ApiTags('Accounts')
 @ApiBearerAuth()
@@ -144,6 +144,22 @@ export class AccountsController {
   async canDelete(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
     const { canDelete, hasTransactions, childrens, data, father } = await this.controllerService.canDeleteAccount(id);
     return toBackResponse('Record getting successfully', { records: { canDelete, hasTransactions, childrens, data, father } });
+  }
+
+  @ApiOperation({ summary: 'Update a account', description: 'Update a account by your id' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Process OK.' })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Unauthorized information.' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad request.' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' })
+  @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Conflict, duplicate entry' })
+  @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal server error.' })
+  @Version('1')
+  @HttpCode(HttpStatus.OK)
+  @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
+  @Patch(':id')
+  async update(@Param('id', ParseUUIDPipe) id: string, @Body() body: AccountsUpdateDto): Promise<TypeResponse> {
+    const updateResult: any = await this.controllerService.updateAndMove(id, body);
+    return toBackResponse('Record updated successfully');
   }
 
   @ApiOperation({ summary: 'Delete a account ', description: 'Delete a account  by your id' })

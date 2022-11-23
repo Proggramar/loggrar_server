@@ -20,7 +20,7 @@ export class AccountsCreateDto {
   @IsNotEmpty()
   @IsString()
   @MaxLength(20)
-  readonly father: string;
+  readonly code_father: string;
 
   @ApiProperty()
   @IsNotEmpty()
