@@ -92,7 +92,7 @@ export class MunicipalityController {
   @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.basic] })
   @Get(':id')
   async get(@Param('id', ParseUUIDPipe) id: string): Promise<TypeResponse> {
-    const data = await this.controllerService.findOne({ where: { id } });
+    const data = await this.controllerService.findOne({ where: { id }, relations: { department: true } });
     return toBackResponse('Record returned', { records: data });
   }
 
