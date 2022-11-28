@@ -34,7 +34,7 @@ export class TemplateService extends DbAbstract {
   async getListsData(): Promise<any> {
     const { transactionsTypes } = await this.getTypes();
     const select = { id: true, code: true, name: true };
-    const accounts = await this.accountsService.findAll({ select, throwError: false });
+    const accounts = await this.accountsService.findAll({ select, order: { code: true }, throwError: false });
     const sources = await this.sourceService.findAll({ select, throwError: false });
     const taxes = await this.taxService.findAll({ select, throwError: false });
     return { accounts, sources, taxes, transactionsTypes };

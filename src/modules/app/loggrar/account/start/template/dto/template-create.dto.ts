@@ -20,8 +20,8 @@ export class TemplateCreateDTO {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
-  readonly id_source?: number;
+  @IsString()
+  readonly source?: number;
 
   @ApiProperty()
   @IsNotEmpty()

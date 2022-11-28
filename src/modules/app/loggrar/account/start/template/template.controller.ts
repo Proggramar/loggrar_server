@@ -63,7 +63,7 @@ export class TemplateController {
   @Version('1')
   @HttpCode(HttpStatus.OK)
   @Auth({ roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant] })
-  @Get('getComboxData')
+  @Get('_getComboxData')
   async getComboxData(@Param('account') code: string): Promise<TypeResponse> {
     const data = await this.controllerService.getListsData();
     return toBackResponse('Records returned', { records: { ...data } });
