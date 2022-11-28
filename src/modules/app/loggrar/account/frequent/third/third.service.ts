@@ -37,8 +37,8 @@ export class ThirdService extends DbAbstract {
 
   getTypes() {
     let types: Array<string> = [];
-    for (let value in Regime) {
-      if (isNaN(Number(value))) types.push(Regime[value]);
+    for (let value in Type) {
+      if (isNaN(Number(value))) types.push(Type[value]);
     }
     return types;
   }
@@ -53,17 +53,22 @@ export class ThirdService extends DbAbstract {
 
   async getDocuments() {
     const select = { id: true, name: true, type_document: true };
-    const documents = await this.documentService.findAll({ select, throwError: false });
+    const documents = await this.documentService.findAll({ select, order: { dian_code: true }, throwError: false });
     return documents;
   }
 
   async getCities() {
     // TODO aplicar where por pais
     const selectMunicipality = { id: true, code: true, name: true };
-    const citiesJoin = await this.municipalityService.findAll({ select: selectMunicipality, throwError: false });
+    const citiesJoin = await this.municipalityService.findAll({
+      select: selectMunicipality,
+      relations: { department: true },
+      order: { name: true },
+      throwError: false,
+    });
 
     const cities = citiesJoin.map((item) => {
-      return { id: item.id, code: item.code, name: item.name, department: item.id_department_join.name };
+      return { id: item.id, code: item.code, name: item.name, department: item.department.name };
     });
     return cities;
   }

@@ -43,7 +43,19 @@ export class ThirdController {
   @Get('listGrid')
   async listGrid(@Query('params') params: string): Promise<TypeResponse> {
     const pagination: ParamsGetList = JSON.parse(params);
-    const { data, meta } = await this.controllerService.getDataGrid({ ...pagination });
+    const { data, meta } = await this.controllerService.getDataGrid({
+      ...pagination,
+      relations: [
+        {
+          table: 'setting_documents',
+          fieldOrigin: 'id',
+          fieldComparation: '=',
+          fieldJoin: 'id_document',
+          fieldAs: 'document',
+          selectFields: 'id,name',
+        },
+      ],
+    });
     return toBackResponse('Records returned', { records: data, meta });
   }
 
@@ -75,7 +87,7 @@ export class ThirdController {
   @Auth({
     roles: [ValidRoles.super, ValidRoles.system, ValidRoles.administrator, ValidRoles.accountant, ValidRoles.operator],
   })
-  @Get('_types')
+  @Get('_getComboxData')
   async getTypes() {
     const { responsability, types, regime, documents, cities } = await this.controllerService.getListsData();
     return toBackResponse('Records returned', { records: { responsability, types, documents, regime, cities } });

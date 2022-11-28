@@ -1,4 +1,4 @@
-import { ApiProperty,  } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
   IsBoolean,
@@ -27,8 +27,8 @@ export class ThirdCreateDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
-  readonly id_document: Number;
+  @IsString()
+  readonly document: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -54,8 +54,8 @@ export class ThirdCreateDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
-  readonly id_city: Number;
+  @IsString()
+  readonly city: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -121,4 +121,3 @@ export class ThirdCreateDto {
   @IsBoolean()
   readonly is_active?: boolean;
 }
-
